@@ -21,7 +21,26 @@ describe('API', () => {
                 expect(Array.isArray(products).toBe(true));
             });
 
+            it('Returns products from the database', () => {
+                const [ product ] = products;
+                expect(product.name).toBeDefined();
+            });
 
+        })
+
+        describe('GET /api/products/:productId', () => {
+            beforeAll(() => {
+                const { data } = await axios.get(`${API_URL}/api/products/1`);
+                firstProduct = data;
+            });
+
+            it('Returns a product from the database', () => {
+                expect(firstProduct.name).toBeDefined();
+            });
+
+            it('Returns the correct product', () => {
+                expect(firstProduct.id).toEqual(1);
+            });
         })
     })
 })
