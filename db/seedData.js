@@ -1,5 +1,5 @@
 // Require client
-
+const client = require('./client');
 // Import adapter functions
 
 // Drop tables
