@@ -75,11 +75,41 @@ async function createInitialProducts() {
     try {
         console.log("Starting to create products...")
 
-        await createProducts({})
+        await createProducts({
+            name: 'ScamWOW!',
+            description: 'it is just a towel',
+            price: 100.99,
+            inStock: true,
+            category: 'Household'
+        });
+        await createProducts({
+            name: 'Dog armor',
+            description: 'armor for dogs',
+            price: 500,
+            inStock: true,
+            category: 'Pets'
+        });
+        await createProducts({
+            name: 'Pasta Aglio e Olio',
+            description: 'fresh hot pasta',
+            price: '7 bucks',
+            inStock: true,
+            category: 'Food'
+        });
 
         console.log("Finished creating products")
     } catch (error) {
         console.log("Error creating Products!")
+    }
+}
+
+async function createInitialOrders() {
+    try {
+        console.log("Starting to create orders...");
+
+    } catch (error) {
+        console.log("Error creating orders!");
+        throw error
     }
 }
 
@@ -118,24 +148,43 @@ async function createInitialUsers() {
     }
 }
 
+async function createInitialOrders(){
+    try {
+        const [albert, sandra, glamgal] = await getAllUsers();
+
+        console.log("Starting to create orders...")
+        
+        await createOrders({
+            status: 'created',
+            userId: albert.id,
+            date: "today"
+        })
+
+        console.log("Finished creating orders!");
+    } catch (error) {
+        console.log("Error creating orders!")
+        throw error
+    }
+}
+
 
 // RebuildDB function:
 
-// const rebuildDB = async () => {
-//     try {
-//         client.connect();
-//         await dropTables();
-//         await createTables();
-//         await createInitialProducts();
-//         await createInitialUsers();
-//         await createInitialOrders();
-//         await createInitialOrderProducts();
-//     } catch (error) {
-//         console.log('Error during rebuildDB');
-//         throw error;
-//     };
-// };
+const rebuildDB = async () => {
+    try {
+        client.connect();
+        await dropTables();
+        await createTables();
+        await createInitialProducts();
+        await createInitialUsers();
+        // await createInitialOrders();
+        // await createInitialOrderProducts();
+    } catch (error) {
+        console.log('Error during rebuildDB');
+        throw error;
+    };
+};
 
-// module.exports = {
-//     rebuildDB,
-// };
+module.exports = {
+    rebuildDB,
+};
