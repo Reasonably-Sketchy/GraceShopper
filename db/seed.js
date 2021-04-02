@@ -1,8 +1,7 @@
-// Un-comment below once client is created and seedData.js is filled
+// DO NOT CHANGE
+const client = require('./client');
+const { rebuildDB } = require('./seedData');
 
-//const client = require('./client');
-//const { rebuildDB } = require('./seedData');
-
-//rebuildDB()
-//  .catch(console.error);
-//  .finally(() => client.end()); 
+rebuildDB()
+  .catch(console.error)
+  .finally(() => client.end());
