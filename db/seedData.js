@@ -159,6 +159,16 @@ async function createInitialOrders(){
             userId: albert.id,
             date: "today"
         })
+        await createOrders({
+            status: 'cancelled',
+            userId: sandra.id,
+            date: "today"
+        })
+        await createOrders({
+            status: 'completed',
+            userId: glamgal.id,
+            date: "today"
+        })
 
         console.log("Finished creating orders!");
     } catch (error) {
@@ -167,6 +177,18 @@ async function createInitialOrders(){
     }
 }
 
+async function createInitialProducts() {
+    try {
+        console.log("Starting to create products...")
+
+
+
+        console.log("Finished creating products!")
+    } catch (error) {
+        console.error("Error creating Products")
+        throw error;
+    }
+}
 
 // RebuildDB function:
 
@@ -177,7 +199,7 @@ const rebuildDB = async () => {
         await createTables();
         await createInitialProducts();
         await createInitialUsers();
-        // await createInitialOrders();
+        await createInitialOrders();
         // await createInitialOrderProducts();
     } catch (error) {
         console.log('Error during rebuildDB');
