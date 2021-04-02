@@ -177,13 +177,28 @@ async function createInitialOrders(){
     }
 }
 
-async function createInitialProducts() {
+async function createInitialOrderProducts(order_products) {
+
+    const [productOne, productTwo, productThree] = order_products
+
     try {
-        console.log("Starting to create products...")
+        console.log("Starting to create order_products...")
 
+        const orderOne = await createOrderProducts(productOne.id, {
+            content: "This should be an order for ScamWOW!"
+        });
 
+        const orderTwo = await createOrderProducts(productTwo.id, {
+            content: "This should be an order for dog armor"
+        });
+
+        const orderThree = await createOrderProducts(productThree.id {
+            content: "this should be an order for pasta"
+        });
 
         console.log("Finished creating products!")
+
+        return [orderOne, orderTwo, orderThree];
     } catch (error) {
         console.error("Error creating Products")
         throw error;
@@ -200,7 +215,7 @@ const rebuildDB = async () => {
         await createInitialProducts();
         await createInitialUsers();
         await createInitialOrders();
-        // await createInitialOrderProducts();
+        await createInitialOrderProducts();
     } catch (error) {
         console.log('Error during rebuildDB');
         throw error;
