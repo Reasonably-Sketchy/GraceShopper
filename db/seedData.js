@@ -1,6 +1,19 @@
 // Require client
 const client = require('./client');
 // Import adapter functions
+const {     
+    getProductById,
+    getAllProducts,
+    createProduct,
+} = require('./products');
+
+const {
+    createUser,
+    getUser,
+    getUserById,
+    getUserByUserName,
+    getAllUsers,
+} = require('./users');
 
 
 // Drop tables
@@ -31,65 +44,75 @@ async function createTables() {
         await client.query(`
             CREATE TABLE products (
                 id SERIAL PRIMARY KEY,
-                name varchar(255) NOT NULL,
-                description varchar(255) NOT NULL,
-                price NOT NULL,
-                imageURL DEFAULT,
-                inStock NOT NULL DEFAULT false,
-                category NOT NULL
+                name VARCHAR(255) NOT NULL,
+                description VARCHAR(255) NOT NULL,
+                price FLOAT NOT NULL,
+                "imageURL" VARCHAR(255),
+                "inStock" BOOLEAN DEFAULT false,
+                category VARCHAR(255) NOT NULL
             );
+        `)
+
+        await client.query(`
             CREATE TABLE users (
                 id SERIAL PRIMARY KEY,
-                firstName varchar(255) NOT NULL, 
-                lastName varchar(255) NOT NULL,
-                email UNIQUE NOT NULL, 
-                imageURL DEFAULT,
-                username varchar(255) UNIQUE NOT NULL,
-                password varchar(255) UNIQUE NOT NULL,
-                "isAdmin" NOT NULL DEFAULT false
+                first VARCHAR(255) NOT NULL, 
+                last VARCHAR(255) NOT NULL,
+                email VARCHAR(255) UNIQUE NOT NULL, 
+                "imageURL" VARCHAR(255),
+                username VARCHAR(255) UNIQUE NOT NULL,
+                password VARCHAR(255) NOT NULL,
+                "isAdmin" BOOLEAN DEFAULT false
             );
+        `)
+        
+        await client.query(`
             CREATE TABLE orders (
                 id SERIAL PRIMARY KEY,
-                status DEFAULT "created",
-                "userId" REFERENCES users(id),
-                "datePlaced" current_date
+                status TEXT DEFAULT 'created',
+                "userId" INTEGER REFERENCES users(id),
+                "datePlaced" DATE
             );
+        `)
+
+        await client.query(`
             CREATE TABLE order_products (
                 id SERIAL PRIMARY KEY,
-                "productId" REFERENCES products(id),
-                "orderId" REFERENCES orders(id),
-                price NOT NULL,
-                quantity NOT NULL DEFAULT 0
-            )
+                "productId" INTEGER REFERENCES products(id) NOT NULL,
+                "orderId" INTEGER REFERENCES orders(id) NOT NULL,
+                price FLOAT NOT NULL,
+                quantity INTEGER NOT NULL DEFAULT 0
+            );
         `)
 
         console.log("Finished building tables!")
-
     } catch (error) {
         console.error("Error building tables!")
+        console.error(error)
     }
 }
+
 
 // Add "create" functions with seed data for tables
 async function createInitialProducts() {
     try {
         console.log("Starting to create products...")
 
-        await createProducts({
+        await createProduct({
             name: 'ScamWOW!',
             description: 'it is just a towel',
             price: 100.99,
             inStock: true,
             category: 'Household'
         });
-        await createProducts({
+        await createProduct({
             name: 'Dog armor',
             description: 'armor for dogs',
             price: 500,
             inStock: true,
             category: 'Pets'
         });
-        await createProducts({
+        await createProduct({
             name: 'Pasta Aglio e Olio',
             description: 'fresh hot pasta',
             price: '7 bucks',
@@ -119,25 +142,26 @@ async function createInitialUsers() {
         console.log("Starting to create users...")
 
         await createUser({ 
+            first: 'Al',
+            last: 'Bert',
+            email: 'albert@bert.org', 
             username: 'albert', 
             password: 'bertie99',
-            firstName: 'Al',
-            lastName: 'Bert',
-            email: 'albert@bert.org' 
+
         });
         await createUser({ 
+            first: 'Sandra',
+            last: 'Butter',
+            email: 'sandra@sandie.net',
             username: 'sandra', 
             password: '2sandy4me',
-            firstName: 'Sandra',
-            lastName: 'Butter',
-            email: 'sandra@sandie.net'
         });
         await createUser({ 
+            first: 'Josh',
+            last: 'Glam',
+            email: 'josh@glam.com',
             username: 'glamgal',
             password: 'soglam',
-            firstName: 'Josh',
-            lastName: 'Glam',
-            email: 'josh@glam.com'
         });
       
         console.log("Finished creating users!");
@@ -148,12 +172,13 @@ async function createInitialUsers() {
     }
 }
 
-async function createInitialOrders(){
-    try {
-        const [albert, sandra, glamgal] = await getAllUsers();
-
-        console.log("Starting to create orders...")
+// async function createInitialOrders(){
+//     try {
+//         // const [albert, sandra, glamgal] = await getAllUsers();
+//         console.log(await getAllUsers())
+//         console.log("Starting to create orders...")
         
+<<<<<<< HEAD
         await createOrders({
             status: 'created',
             userId: albert.id,
@@ -204,6 +229,58 @@ async function createInitialOrderProducts(order_products) {
         throw error;
     }
 }
+=======
+//         await createOrder({
+//             status: 'created',
+//             userId: albert.id,
+//             date: "today"
+//         })
+//         await createOrder({
+//             status: 'cancelled',
+//             userId: sandra.id,
+//             date: "today"
+//         })
+//         await createOrder({
+//             status: 'completed',
+//             userId: glamgal.id,
+//             date: "today"
+//         })
+
+//         console.log("Finished creating orders!");
+//     } catch (error) {
+//         console.log("Error creating orders!")
+//         throw error
+//     }
+// }
+
+// async function createInitialOrderProducts(order_products) {
+
+//     const [productOne, productTwo, productThree] = order_products
+
+//     try {
+//         console.log("Starting to create order_products...")
+
+//         const orderOne = await createOrderProducts(productOne.id, {
+//             content: "This should be an order for ScamWOW!"
+//         });
+
+//         const orderTwo = await createOrderProducts(productTwo.id, {
+//             content: "This should be an order for dog armor"
+//         });
+
+//         const orderThree = await createOrderProducts(productThree.id, {
+//             content: "this should be an order for pasta"
+//         });
+
+//         console.log("Finished creating products!")
+
+//         return [orderOne, orderTwo, orderThree];
+//     } catch (error) {
+//         console.error("Error creating Products")
+//         throw error;
+//     }
+// }
+>>>>>>> 24cf35cca2d17a7cd3d117d4dd7a4f49b5036ced
 
 // RebuildDB function:
 
@@ -214,8 +291,8 @@ const rebuildDB = async () => {
         await createTables();
         await createInitialProducts();
         await createInitialUsers();
-        await createInitialOrders();
-        await createInitialOrderProducts();
+        // await createInitialOrders();
+        // await createInitialOrderProducts();
     } catch (error) {
         console.log('Error during rebuildDB');
         throw error;

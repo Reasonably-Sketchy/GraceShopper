@@ -29,18 +29,12 @@ async function getAllProducts() {
 };
 
 async function createProduct({ name, description, price, imageURL, inStock, category }) {
-    
-    const productToCreate = {
-        name: name,
-        description: description,
-        price: price,
-        imageURL: '',
-        inStock: inStock,
-        category: category,
-    };
 
-    if (imageURL) {
-        productToCreate.imageURL = imageURL;
+    let image;
+    if (!imageURL) {
+        image = '';
+    } else {
+        image = imageURL;
     };
 
     try {
@@ -50,8 +44,8 @@ async function createProduct({ name, description, price, imageURL, inStock, cate
             VALUES($1, $2, $3, $4, $5, $6)
             ON CONFLICT (name) DO NOTHING
             RETURNING *;
-        `, [name, description, price, imageURL, inStock, category]);
-        
+        `, [name, description, price, image, inStock, category]);
+
         return product;
     } catch (error) {
         throw error;
@@ -59,5 +53,11 @@ async function createProduct({ name, description, price, imageURL, inStock, cate
 };
 
 module.exports = {
+<<<<<<< HEAD
   getAllProducts
+=======
+    getProductById,
+    getAllProducts,
+    createProduct,
+>>>>>>> 24cf35cca2d17a7cd3d117d4dd7a4f49b5036ced
 }
