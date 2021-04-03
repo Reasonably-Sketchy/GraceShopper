@@ -192,7 +192,7 @@ async function createInitialOrderProducts(order_products) {
             content: "This should be an order for dog armor"
         });
 
-        const orderThree = await createOrderProducts(productThree.id {
+        const orderThree = await createOrderProducts(productThree.id, {
             content: "this should be an order for pasta"
         });
 

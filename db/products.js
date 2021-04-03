@@ -57,3 +57,7 @@ async function createProduct({ name, description, price, imageURL, inStock, cate
         throw error;
     };
 };
+
+module.exports = {
+  getAllProducts
+}
