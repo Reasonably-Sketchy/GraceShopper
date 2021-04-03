@@ -11,8 +11,8 @@ let productsFromDatabase;
 describe('API', () => {
     describe('Products', () => {
         let products;
-        describe('GET /api/products', () => {
-            beforeAll(() => {
+        describe('GET /api/products', async () => {
+            beforeAll(async () => {
                 const { data } = await axios.get(`${API_URL}/api/products`);
                 products = data;
             });
@@ -28,8 +28,8 @@ describe('API', () => {
 
         })
 
-        describe('GET /api/products/:productId', () => {
-            beforeAll(() => {
+        describe('GET /api/products/:productId', async () => {
+            beforeAll(async () => {
                 const { data } = await axios.get(`${API_URL}/api/products/1`);
                 firstProduct = data;
             });
