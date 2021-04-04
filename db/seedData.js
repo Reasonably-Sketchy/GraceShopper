@@ -44,7 +44,7 @@ async function createTables() {
         await client.query(`
             CREATE TABLE products (
                 id SERIAL PRIMARY KEY,
-                name VARCHAR(255) NOT NULL,
+                name VARCHAR(255) UNIQUE NOT NULL,
                 description VARCHAR(255) NOT NULL,
                 price FLOAT NOT NULL,
                 "imageURL" VARCHAR(255),
@@ -101,7 +101,8 @@ async function createInitialProducts() {
         await createProduct({
             name: 'ScamWOW!',
             description: 'it is just a towel',
-            price: 100.99,
+            price: 100,
+            imageURL: 'https://photos.google.com/photo/AF1QipOJ_rrSbgdkBXNEobYuaz2KhVBSYa8V96arfN2y',
             inStock: true,
             category: 'Household'
         });
@@ -115,14 +116,14 @@ async function createInitialProducts() {
         await createProduct({
             name: 'Pasta Aglio e Olio',
             description: 'fresh hot pasta',
-            price: '7 bucks',
+            price: 7,
             inStock: true,
             category: 'Food'
         });
 
         console.log("Finished creating products")
     } catch (error) {
-        console.log("Error creating Products!")
+        console.log("Error creating Products:", error)
     }
 }
 
