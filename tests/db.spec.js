@@ -1,10 +1,15 @@
-require('dotenv').config();
-const {describe} = require('yargs');
-const {getAllProducts} = require('../db')
+const {
+    getAllProducts,
+    getProductById
+} = require('../db')
 const client = require('../db/client');
 const { rebuildDB } = require('../db/seedData');
 
+
 let productsFromDatabase, products, productsFromAdapter;
+
+// productsFromAdapter = await getAllProducts();
+
 describe('Database', ()=> {
     beforeAll(async()=>{
         client.connect();
@@ -13,11 +18,11 @@ describe('Database', ()=> {
             SELECT * FROM products;
         `)
         productsFromDatabase = rows;
-        productsFromAdapter = await getAllProducts;
+        productsFromAdapter = await getAllProducts();
+        // productsFromAdapterById = await getProductById
+
     });
-    afterAll(()=>{
-        client.end();
-    });
+
     describe('getAllProducts', ()=>{
         it('returns an array', ()=>{
             expect(Array.isArray(productsFromAdapter)).toBe(true);
@@ -31,5 +36,25 @@ describe('Database', ()=> {
             const [product] = productsFromAdapter;
             expect(product).toHaveProperty('name');
         })
-    })
+    });
+
+    describe('getProductById', ()=>{
+        it('returns an array', ()=>{
+            expect(Array.isArray(productsFromAdapter)).toBe(true);
+        });
+
+        it('returns an array of products', ()=>{
+            expect(productsFromAdapter).toEqual(productsFromDatabase);
+        });
+
+        it('each product has a name property', ()=>{
+            const [product] = productsFromAdapter;
+            expect(product).toHaveProperty('name');
+        })
+    });
+
+    afterAll(()=>{
+        client.end();
+    });
+
 })
