@@ -102,7 +102,8 @@ async function createInitialProducts() {
             name: 'ScamWOW!',
             description: 'it is just a towel',
             price: 100,
-            imageURL: 'https://photos.google.com/photo/AF1QipOJ_rrSbgdkBXNEobYuaz2KhVBSYa8V96arfN2y',
+            // CHANGE IMAGEURL TO DEPLOY URL
+            imageURL: 'http://localhost:3001/assets/scamwow.jpg',
             inStock: true,
             category: 'Household'
         });
