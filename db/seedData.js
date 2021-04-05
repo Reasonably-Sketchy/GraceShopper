@@ -98,27 +98,42 @@ async function createInitialProducts() {
     try {
         console.log("Starting to create products...")
 
-        await createProduct({
-            name: 'ScamWOW!',
-            description: 'it is just a towel',
-            price: 100.99,
-            inStock: true,
-            category: 'Household'
-        });
-        await createProduct({
-            name: 'Dog armor',
-            description: 'armor for dogs',
-            price: 500,
-            inStock: true,
-            category: 'Pets'
-        });
-        await createProduct({
-            name: 'Pasta Aglio e Olio',
-            description: 'fresh hot pasta',
-            price: '7 bucks',
-            inStock: true,
-            category: 'Food'
-        });
+        const productsToCreate = [
+            {            
+                name: 'ScamWOW',
+                description: 'it is just a towel',
+                price: '100.99',
+                imageURL: '',
+                inStock: 'true',
+                category: 'Household'
+            }
+        ]
+
+        const products = await Promise.all(productsToCreate.map(createUser))
+        console.log('is this products?', products)
+
+        // await createProduct({
+        //     name: 'ScamWOW',
+        //     description: 'it is just a towel',
+        //     price: '100.99',
+        //     imageURL: '',
+        //     inStock: 'true',
+        //     category: 'Household'
+        // });
+        // await createProduct({
+        //     name: 'Dog armor',
+        //     description: 'armor for dogs',
+        //     price: 500,
+        //     inStock: true,
+        //     category: 'Pets'
+        // });
+        // await createProduct({
+        //     name: 'Pasta Aglio e Olio',
+        //     description: 'fresh hot pasta',
+        //     price: '7 bucks',
+        //     inStock: true,
+        //     category: 'Food'
+        // });
 
         console.log("Finished creating products")
     } catch (error) {
@@ -147,7 +162,6 @@ async function createInitialUsers() {
             email: 'albert@bert.org', 
             username: 'albert', 
             password: 'bertie99',
-
         });
         await createUser({ 
             first: 'Sandra',
@@ -167,7 +181,7 @@ async function createInitialUsers() {
         console.log("Finished creating users!");
 
     } catch (error) {
-        console.error("Error creating users!");
+        console.log("Error creating users!");
         throw error
     }
 }

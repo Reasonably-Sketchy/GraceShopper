@@ -16,6 +16,7 @@ async function getProductById(id) {
   };
 };
 
+
 async function getAllProducts() {
   try {
     const { rows } = await client.query(`
@@ -27,6 +28,7 @@ async function getAllProducts() {
     throw error;
   };
 };
+
 
 async function createProduct({ name, description, price, imageURL, inStock, category }) {
 
@@ -40,7 +42,7 @@ async function createProduct({ name, description, price, imageURL, inStock, cate
     try {
         const { rows: [product] } = await client.query(
         `
-            INSERT INTO products(name, description, price, imageURL, inStock, category)
+            INSERT INTO products(name, description, price, "imageURL", "inStock", category)
             VALUES($1, $2, $3, $4, $5, $6)
             ON CONFLICT (name) DO NOTHING
             RETURNING *;
