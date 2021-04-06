@@ -97,47 +97,34 @@ async function createTables() {
 async function createInitialProducts() {
     try {
         console.log("Starting to create products...")
-
-        const productsToCreate = [
-            {            
-                name: 'ScamWOW',
-                description: 'it is just a towel',
-                price: '100.99',
-                imageURL: '',
-                inStock: 'true',
-                category: 'Household'
-            }
-        ]
-
-        const products = await Promise.all(productsToCreate.map(createUser))
-        console.log('is this products?', products)
-
-        // await createProduct({
-        //     name: 'ScamWOW',
-        //     description: 'it is just a towel',
-        //     price: '100.99',
-        //     imageURL: '',
-        //     inStock: 'true',
-        //     category: 'Household'
-        // });
-        // await createProduct({
-        //     name: 'Dog armor',
-        //     description: 'armor for dogs',
-        //     price: 500,
-        //     inStock: true,
-        //     category: 'Pets'
-        // });
-        // await createProduct({
-        //     name: 'Pasta Aglio e Olio',
-        //     description: 'fresh hot pasta',
-        //     price: '7 bucks',
-        //     inStock: true,
-        //     category: 'Food'
-        // });
+      
+        await createProduct({
+            name: 'ScamWOW!',
+            description: 'it is just a towel',
+            price: 100,
+            // CHANGE IMAGEURL TO DEPLOY URL
+            imageURL: 'http://localhost:3001/assets/scamwow.jpg',
+            inStock: true,
+            category: 'Household'
+        });
+        await createProduct({
+            name: 'Dog armor',
+            description: 'armor for dogs',
+            price: 500,
+            inStock: true,
+            category: 'Pets'
+        });
+        await createProduct({
+            name: 'Pasta Aglio e Olio',
+            description: 'fresh hot pasta',
+            price: 7,
+            inStock: true,
+            category: 'Food'
+        });
 
         console.log("Finished creating products")
     } catch (error) {
-        console.log("Error creating Products!")
+        console.log("Error creating Products:", error)
     }
 }
 
@@ -163,6 +150,7 @@ async function createInitialUsers() {
             username: 'albert', 
             password: 'bertie99',
         });
+      
         await createUser({ 
             first: 'Sandra',
             last: 'Butter',
@@ -170,6 +158,7 @@ async function createInitialUsers() {
             username: 'sandra', 
             password: '2sandy4me',
         });
+      
         await createUser({ 
             first: 'Josh',
             last: 'Glam',
