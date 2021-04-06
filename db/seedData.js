@@ -44,7 +44,7 @@ async function createTables() {
         await client.query(`
             CREATE TABLE products (
                 id SERIAL PRIMARY KEY,
-                name VARCHAR(255) UNIQUE NOT NULL,
+                name VARCHAR(255) NOT NULL,
                 description VARCHAR(255) NOT NULL,
                 price FLOAT NOT NULL,
                 "imageURL" VARCHAR(255),
@@ -97,7 +97,7 @@ async function createTables() {
 async function createInitialProducts() {
     try {
         console.log("Starting to create products...")
-
+      
         await createProduct({
             name: 'ScamWOW!',
             description: 'it is just a towel',
@@ -149,8 +149,8 @@ async function createInitialUsers() {
             email: 'albert@bert.org', 
             username: 'albert', 
             password: 'bertie99',
-
         });
+      
         await createUser({ 
             first: 'Sandra',
             last: 'Butter',
@@ -158,6 +158,7 @@ async function createInitialUsers() {
             username: 'sandra', 
             password: '2sandy4me',
         });
+      
         await createUser({ 
             first: 'Josh',
             last: 'Glam',
@@ -169,7 +170,7 @@ async function createInitialUsers() {
         console.log("Finished creating users!");
 
     } catch (error) {
-        console.error("Error creating users!");
+        console.log("Error creating users!");
         throw error
     }
 }
