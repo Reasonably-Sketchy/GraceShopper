@@ -13,19 +13,11 @@ let productsFromDatabase, products, productsFromAdapter, createdProduct;
 let userFromDatabase, userFromAdapter;
 
 
-
 describe('Database', ()=> {
     beforeAll(async()=>{
         client.connect();
         await rebuildDB();
 
-        const {rows: products}=await client.query(`
-            SELECT * FROM products;
-        `)
-        productsFromDatabase = products;
-        productsFromAdapter = await getAllProducts();
-        createdProduct = await createProduct();
-        console.log('createdProduct?', createdProduct)
         userFromAdapter = await getUser();
         const {rows: users} = await client.query(`
             SELECT * FROM USERS;
@@ -38,15 +30,15 @@ describe('Database', ()=> {
     });
 
     describe('Products',  ()=>{
-
-        // PRODUCT TESTS
-
-
-
-        // productsFromAdapterById = await getProductById
-        // const [productsHaveName] = productsFromAdapter;
-        // console.log('produx w/ name????', productsFromAdapter, productsFromDatabase, productsHaveName)
-
+        beforeAll(async()=>{
+            const {rows: products}=await client.query(`
+                SELECT * FROM products;
+            `);
+            productsFromDatabase = products;
+            productsFromAdapter = await getAllProducts();
+            createdProduct = await createProduct();
+            console.log('createdProduct?', createdProduct)
+        });
 
         describe('getAllProducts', ()=>{
             it('returns an array', ()=>{
