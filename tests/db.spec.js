@@ -16,21 +16,32 @@ let userFromDatabase, userFromAdapter;
 
 describe('Database', ()=> {
     beforeAll(async()=>{
-        client.connect();
+        // client.connect();
         await rebuildDB();
 
         const {rows: products}=await client.query(`
             SELECT * FROM products;
         `)
         productsFromDatabase = products;
+        // console.log('PRODUCTS FROM DB: ', products)
         productsFromAdapter = await getAllProducts();
-        createdProduct = await createProduct();
-        console.log('createdProduct?', createdProduct)
-        userFromAdapter = await getUser();
+        // console.log('PRODUCTS: ', productsFromAdapter);
+        // createdProduct = await createProduct({
+        //     name: 'Bat',
+        //     description: 'yada',
+        //     price: 10,
+        //     inStock: true,
+        //     category: 'Food'
+        // });
+        // console.log('createdProduct?', createdProduct)
+        userFromAdapter = await getUser({
+            username: 'albert',
+            password: 'bertie99',
+        });
         const {rows: users} = await client.query(`
             SELECT * FROM USERS;
         `)
-        productsFromDatabase = users;
+        // productsFromDatabase = users;
 
     });
     afterAll(()=>{
@@ -41,7 +52,13 @@ describe('Database', ()=> {
 
         // PRODUCT TESTS
 
-
+        beforeAll(async () => {
+            try {
+                productsFromAdapter = await getAllProducts();
+            } catch(error) {
+                console.error('ERROR ON 49', error)
+            }
+        })
 
         // productsFromAdapterById = await getProductById
         // const [productsHaveName] = productsFromAdapter;
@@ -57,28 +74,28 @@ describe('Database', ()=> {
                 expect(productsFromAdapter).toEqual(productsFromDatabase);
             });
 
-            xit('each product has a name property', ()=>{
+            it('each product has a name property', ()=>{
                 const [product] = productsFromAdapter;
                 expect(product).toHaveProperty('name');
             })
         });
 
         describe('createProduct', ()=>{
-            xit('returns an object', ()=>{
+            it('returns an object', ()=>{
                 expect(typeof createdProduct).toBe('undefined')
             });
         })
 
         describe('getProductById', ()=>{
-            xit('returns an array', ()=>{
+            it('returns an array', ()=>{
                 expect(Array.isArray(productsFromAdapter)).toBe(true);
             });
 
-            xit('returns an array of products', ()=>{
+            it('returns an array of products', ()=>{
                 expect(productsFromAdapter).toEqual(productsFromDatabase);
             });
 
-            xit('each product has a name property', ()=>{
+            it('each product has a name property', ()=>{
                 const [product] = productsFromAdapter;
                 expect(product).toHaveProperty('name');
             })
@@ -95,8 +112,8 @@ describe('Database', ()=> {
             });
 
             it('user does not contain a property called password', ()=>{
-                const [user] = userFromAdapter;
-                expect(product.name).toBe(undefined);
+                const user = userFromAdapter;
+                expect(user.password).toBe(undefined);
             })
         })
 
