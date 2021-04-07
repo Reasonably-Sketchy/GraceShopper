@@ -16,6 +16,7 @@ async function getProductById(id) {
   };
 };
 
+
 async function getAllProducts() {
   try {
     const { rows } = await client.query(`
@@ -28,32 +29,33 @@ async function getAllProducts() {
   };
 };
 
-async function createProduct({ name, description, price, imageURL, inStock, category }) {
-    
-    const productToCreate = {
-        name: name,
-        description: description,
-        price: price,
-        imageURL: '',
-        inStock: inStock,
-        category: category,
-    };
 
-    if (imageURL) {
-        productToCreate.imageURL = imageURL;
+async function createProduct({ name, description, price, imageURL, inStock, category }) {
+
+    let image;
+    if (!imageURL) {
+        image = '';
+    } else {
+        image = imageURL;
     };
 
     try {
         const { rows: [product] } = await client.query(
         `
-            INSERT INTO products(name, description, price, imageURL, inStock, category)
+            INSERT INTO products(name, description, price, "imageURL", "inStock", category)
             VALUES($1, $2, $3, $4, $5, $6)
             ON CONFLICT (name) DO NOTHING
             RETURNING *;
-        `, [name, description, price, imageURL, inStock, category]);
-        
+        `, [name, description, price, image, inStock, category]);
+
         return product;
     } catch (error) {
         throw error;
     };
 };
+
+module.exports = {
+    getProductById,
+    getAllProducts,
+    createProduct,
+}
