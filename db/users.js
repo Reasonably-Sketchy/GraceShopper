@@ -20,7 +20,7 @@ async function createUser({ first, last, email, username, password }) {
     if (user.password) {
       delete user.password;
     }
-
+    console.log('USER: ', user)
     return user;
   } catch (error) {
     throw error;

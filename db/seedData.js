@@ -44,7 +44,7 @@ async function createTables() {
         await client.query(`
             CREATE TABLE products (
                 id SERIAL PRIMARY KEY,
-                name VARCHAR(255) NOT NULL,
+                name VARCHAR(255) UNIQUE NOT NULL,
                 description VARCHAR(255) NOT NULL,
                 price FLOAT NOT NULL,
                 "imageURL" VARCHAR(255),
@@ -97,11 +97,13 @@ async function createTables() {
 async function createInitialProducts() {
     try {
         console.log("Starting to create products...")
-
+      
         await createProduct({
             name: 'ScamWOW!',
             description: 'it is just a towel',
-            price: 100.99,
+            price: 100,
+            // CHANGE IMAGEURL TO DEPLOY URL
+            imageURL: 'http://localhost:3001/assets/scamwow.jpg',
             inStock: true,
             category: 'Household'
         });
@@ -115,14 +117,14 @@ async function createInitialProducts() {
         await createProduct({
             name: 'Pasta Aglio e Olio',
             description: 'fresh hot pasta',
-            price: '7 bucks',
+            price: 7,
             inStock: true,
             category: 'Food'
         });
 
         console.log("Finished creating products")
     } catch (error) {
-        console.log("Error creating Products!")
+        console.log("Error creating Products:", error)
     }
 }
 
@@ -147,8 +149,8 @@ async function createInitialUsers() {
             email: 'albert@bert.org', 
             username: 'albert', 
             password: 'bertie99',
-
         });
+      
         await createUser({ 
             first: 'Sandra',
             last: 'Butter',
@@ -156,6 +158,7 @@ async function createInitialUsers() {
             username: 'sandra', 
             password: '2sandy4me',
         });
+      
         await createUser({ 
             first: 'Josh',
             last: 'Glam',
@@ -167,7 +170,7 @@ async function createInitialUsers() {
         console.log("Finished creating users!");
 
     } catch (error) {
-        console.error("Error creating users!");
+        console.log("Error creating users!");
         throw error
     }
 }
@@ -178,58 +181,7 @@ async function createInitialUsers() {
 //         console.log(await getAllUsers())
 //         console.log("Starting to create orders...")
         
-<<<<<<< HEAD
-        await createOrders({
-            status: 'created',
-            userId: albert.id,
-            date: "today"
-        })
-        await createOrders({
-            status: 'cancelled',
-            userId: sandra.id,
-            date: "today"
-        })
-        await createOrders({
-            status: 'completed',
-            userId: glamgal.id,
-            date: "today"
-        })
 
-        console.log("Finished creating orders!");
-    } catch (error) {
-        console.log("Error creating orders!")
-        throw error
-    }
-}
-
-async function createInitialOrderProducts(order_products) {
-
-    const [productOne, productTwo, productThree] = order_products
-
-    try {
-        console.log("Starting to create order_products...")
-
-        const orderOne = await createOrderProducts(productOne.id, {
-            content: "This should be an order for ScamWOW!"
-        });
-
-        const orderTwo = await createOrderProducts(productTwo.id, {
-            content: "This should be an order for dog armor"
-        });
-
-        const orderThree = await createOrderProducts(productThree.id, {
-            content: "this should be an order for pasta"
-        });
-
-        console.log("Finished creating products!")
-
-        return [orderOne, orderTwo, orderThree];
-    } catch (error) {
-        console.error("Error creating Products")
-        throw error;
-    }
-}
-=======
 //         await createOrder({
 //             status: 'created',
 //             userId: albert.id,
@@ -280,7 +232,6 @@ async function createInitialOrderProducts(order_products) {
 //         throw error;
 //     }
 // }
->>>>>>> 24cf35cca2d17a7cd3d117d4dd7a4f49b5036ced
 
 // RebuildDB function:
 
