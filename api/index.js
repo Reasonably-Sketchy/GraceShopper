@@ -50,4 +50,7 @@ apiRouter.use('/health', healthRouter);
 const productsRouter = require('./products');
 apiRouter.use('/products', productsRouter);
 
+const usersRouter = require('./users');
+apiRouter.use('/users', usersRouter);
+
 module.exports = apiRouter;
