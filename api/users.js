@@ -1,4 +1,5 @@
 const { JWT_SECRET = "landfillbait" } = process.env;
+// NEED TO MOVE TO PROCESS.ENV ^^^
 const express = require("express");
 const usersRouter = express.Router();
 const jwt = require("jsonwebtoken");
@@ -7,7 +8,7 @@ const {
   getUser,
   getUserById,
   getUserByUserName,
-} = require("../db");
+} = require('../db');
 const bcrypt = require("bcrypt");
 
 usersRouter.post("/register", async (req, res, next) => {
@@ -46,6 +47,7 @@ usersRouter.post("/register", async (req, res, next) => {
         expiresIn: "1w",
       }
     );
+    
     console.log("USER", user);
     res.send({
       message: "thank you for signing up",
@@ -64,25 +66,17 @@ usersRouter.post("/login", async (req, res, next) => {
       name: "MissingCredentialsError",
       message: "Please supply both a username and password",
     });
-  }
+  };
+
   try {
-    const user = await getUserByUserName(username);
+    const user = await getUser({ username, password });
     if (user) {
-      const passwordsMatch = await bcrypt.compare(password, user.password);
-      if (passwordsMatch) {
-        let token = jwt.sign({ id: user.id, username }, JWT_SECRET);
-        res.send({
-          message: "you're logged in!",
-          user,
-          token,
-        });
-      } else {
-        next({
-          name: "IncorrectCredentialsError",
-          message: "Username or password is incorrect",
-        });
-        return;
-      }
+      const token = jwt.sign(user, JWT_SECRET, { expiresIn: '7d' });
+      res.send({
+        message: "you're logged in!",
+        user,
+        token,
+      });
     } else {
       next({
         name: "IncorrectCredentialsError",
