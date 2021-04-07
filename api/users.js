@@ -11,7 +11,7 @@ const {
 const bcrypt = require("bcrypt");
 usersRouter.post("/register", async (req, res, next) => {
   console.log("HERE");
-  const { username, password } = req.body;
+  const { first, last, email, username, password } = req.body;
   try {
     if (password.length <= 7) {
       next({
@@ -29,6 +29,9 @@ usersRouter.post("/register", async (req, res, next) => {
       return;
     }
     const user = await createUser({
+      first: first,
+      last: last,
+      email: email,
       username: username,
       password: password,
     });
