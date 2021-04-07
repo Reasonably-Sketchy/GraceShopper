@@ -1,11 +1,9 @@
-
 const express = require('express');
 const { getAllProducts, getProductById } = require('../db');
 
 const productsRouter = express.Router();
 const { requireUser } = require("./utils");
 const { client, updatePost, getPostById } = require("../db");
-client.connect();
 
 productsRouter.use((req, res, next) => {
     console.log('A request is being made to /products...');
@@ -41,8 +39,6 @@ productsRouter.use((req, res, next) => {
   console.log("A request is being made to /products");
   next();
 });
-
-const { getAllProducts } = require("../db");
 
 productsRouter.delete("/:postId", requireUser, async (req, res, next) => {
   try {
