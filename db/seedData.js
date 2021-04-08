@@ -15,6 +15,14 @@ const {
     getAllUsers,
 } = require('./users');
 
+const {
+    getOrderById,
+    getAllOrders,
+    getOrdersByUser,
+    getOrdersByProduct,
+    getCartByUser,
+    createOrder,
+} = require('./orders');
 
 // Drop tables
 async function dropTables() {
@@ -128,17 +136,6 @@ async function createInitialProducts() {
     }
 }
 
-async function createInitialOrders() {
-    try {
-        console.log("Starting to create orders...");
-
-    } catch (error) {
-        console.log("Error creating orders!");
-        throw error
-    }
-}
-
-
 async function createInitialUsers() {
     try {
         console.log("Starting to create users...")
@@ -166,6 +163,15 @@ async function createInitialUsers() {
             username: 'glamgal',
             password: 'soglam',
         });
+
+        await createUser({ 
+            first: 'Austin',
+            last: 'Thomas',
+            email: 'austin.thomas130@gmail.com',
+            username: 'Austy',
+            password: '12345678',
+            isAdmin: true,
+        });
       
         console.log("Finished creating users!");
 
@@ -175,34 +181,41 @@ async function createInitialUsers() {
     }
 }
 
-// async function createInitialOrders(){
-//     try {
-//         // const [albert, sandra, glamgal] = await getAllUsers();
-//         console.log(await getAllUsers())
-//         console.log("Starting to create orders...")
-        
-//         await createOrder({
-//             status: 'created',
-//             userId: albert.id,
-//             date: "today"
-//         })
-//         await createOrder({
-//             status: 'cancelled',
-//             userId: sandra.id,
-//             date: "today"
-//         })
-//         await createOrder({
-//             status: 'completed',
-//             userId: glamgal.id,
-//             date: "today"
-//         })
+async function createInitialOrders(){
 
-//         console.log("Finished creating orders!");
-//     } catch (error) {
-//         console.log("Error creating orders!")
-//         throw error
-//     }
-// }
+    try {
+        console.log("Starting to create orders...")
+
+        await createOrder({
+            status: 'created',
+            userId: 1,
+        })
+        await createOrder({
+            status: 'cancelled',
+            userId: 2,
+        })
+        await createOrder({
+            status: 'completed',
+            userId: 3,
+        })
+
+        await createOrder({
+            status: 'created',
+            userId: 4,
+        });
+
+        await createOrder({
+            status: 'completed',
+            userId: 4,
+            datePlaced: '09/10/20',
+        })
+
+        console.log("Finished creating orders!");
+    } catch (error) {
+        console.log("Error creating orders!")
+        throw error
+    }
+}
 
 // async function createInitialOrderProducts(order_products) {
 
@@ -241,7 +254,7 @@ const rebuildDB = async () => {
         await createTables();
         await createInitialProducts();
         await createInitialUsers();
-        // await createInitialOrders();
+        await createInitialOrders();
         // await createInitialOrderProducts();
     } catch (error) {
         console.log('Error during rebuildDB');

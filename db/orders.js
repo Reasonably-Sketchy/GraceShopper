@@ -80,24 +80,10 @@ const getAllOrders = async () => {
     };
 };
 
-
-// async function getAllOrders(){
-//     try {
-//         const {rows} = await client.query(`
-//         SELECT *
-//         FROM products;
-//         `)
-
-//         // routine = order, activities = products
-//     } catch (error) {
-//         throw error
-//     }
-// }
-
 async function getOrdersByUser({id}){
     try {
         const {rows: orders} = await client.query(`
-            SELECT orders.*, users.id AS "buyerId"
+            SELECT orders.*
             FROM orders
             JOIN users ON orders."userId" = users.id
             WHERE "userId"=$1
