@@ -3,7 +3,8 @@ const express = require('express');
 const apiRouter = express.Router();
 
 const jwt = require('jsonwebtoken');
-const { JWT_SECRET } = process.env;
+const { JWT_SECRET = "landfillbait" } = process.env;
+// NEED TO MOVE TO PROCESS.ENV ^^^
 
 const { getUserById } = require('../db');
 
@@ -49,5 +50,8 @@ apiRouter.use('/health', healthRouter);
 
 const productsRouter = require('./products');
 apiRouter.use('/products', productsRouter);
+
+const usersRouter = require('./users');
+apiRouter.use('/users', usersRouter);
 
 module.exports = apiRouter;
