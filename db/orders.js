@@ -120,8 +120,8 @@ async function getCartByUser({id}){
         return orders
     } catch (error) {
         throw error
-    }
-}
+    };
+};
 
 async function createOrder({status, userId}){
     try {
@@ -134,8 +134,47 @@ async function createOrder({status, userId}){
         return order
     } catch (error) {
         throw error
-    }
-}
+    };
+};
+
+// UPDATE ORDER
+const updateOrder = async ({ id, status, userId }) => {
+    const updateFields = {};
+
+    if (status) {
+        updateFields.status = status;
+    };
+
+    if (userId) {
+        updateFields.userId = userId;
+    };
+
+    const setString = Object.keys(updateFields).map(
+        (key, index) => `"${key}"=$${index + 1}`
+    ).join(', ');
+
+    if (setString.length === 0) {
+        return;
+    };
+
+    try {
+        const {rows: [updatedOrder]} = await client.query(`
+            UPDATE orders
+            SET ${setString}
+            WHERE id=${id}
+            RETURNING *;
+        `, Object.values(updateFields));
+
+        return updatedOrder;
+    } catch(error) {
+        throw error;
+    };
+};
+
+// COMPLETE ORDER
+
+// CANCEL ORDER
+
 
 module.exports = {
     getOrderById,
@@ -143,5 +182,6 @@ module.exports = {
     getOrdersByUser,
     getOrdersByProduct,
     getCartByUser,
-    createOrder
+    createOrder,
+    updateOrder,
 }
