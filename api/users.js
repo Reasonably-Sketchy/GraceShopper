@@ -9,6 +9,7 @@ const {
   getUserByUserName,
 } = require("../db");
 const bcrypt = require("bcrypt");
+
 usersRouter.post("/register", async (req, res, next) => {
   console.log("HERE");
   const { first, last, email, username, password } = req.body;
@@ -52,6 +53,7 @@ usersRouter.post("/register", async (req, res, next) => {
       token,
     });
   } catch (error) {
+    console.error(error)
     throw error;
   }
 });
@@ -92,5 +94,7 @@ usersRouter.post("/login", async (req, res, next) => {
     next(error);
   }
 });
+
+// add users/me
 
 module.exports = usersRouter;
