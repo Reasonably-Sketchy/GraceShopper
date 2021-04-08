@@ -3,7 +3,8 @@ const express = require('express');
 const apiRouter = express.Router();
 
 const jwt = require('jsonwebtoken');
-const { JWT_SECRET } = process.env;
+const { JWT_SECRET = "landfillbait" } = process.env;
+// NEED TO MOVE TO PROCESS.ENV ^^^
 
 const { getUserById } = require('../db');
 

@@ -1,6 +1,6 @@
 const { createSecureServer } = require("http2");
 const client = require(`./client`);
-const bcrypt = require("bcrypt");
+const bcrypt = require('bcrypt');
 
 async function createUser({ first, last, email, username, password }) {
   const SALT_COUNT = 10;
@@ -17,6 +17,11 @@ async function createUser({ first, last, email, username, password }) {
             `,
       [first, last, email, username, hashedPassword]
     );
+
+    if (!user.isAdmin) {
+      delete user.isAdmin;
+    };
+
     if (user.password) {
       delete user.password;
     }
@@ -28,17 +33,26 @@ async function createUser({ first, last, email, username, password }) {
 }
 
 async function getUser({ username, password }) {
+  // add some validation
   try {
     const user = await getUserByUserName(username);
     // const user = await getUserByUserName(username);
     const hashedPassword = user.password;
     const passwordsMatch = await bcrypt.compare(password, hashedPassword);
-    if (passwordsMatch) {
+
+
+    if (!passwordsMatch) {
       // return the user object (without the password)
-      delete user.password;
-      return user;
+      return;
     }
-  } catch (user) {
+
+    if (!user.isAdmin) {
+      delete user.isAdmin
+    };
+
+    delete user.password;
+    return user;
+  } catch (error) {
     throw error;
   }
 }
@@ -55,9 +69,14 @@ async function getUserById(id) {
             `,
       [id]
     );
+
+    if (!user.isAdmin) {
+      delete user.isAdmin;
+    };
+    
     if (user.password) {
       delete user.password;
-    }
+    };
     return user;
   } catch (user) {
     throw error;
@@ -76,6 +95,7 @@ async function getUserByUserName(username) {
             `,
       [username]
     );
+
     return user;
   } catch (error) {
     throw error;
