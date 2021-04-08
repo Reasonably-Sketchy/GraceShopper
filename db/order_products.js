@@ -16,15 +16,15 @@ const getOrderProductById = async (id) => {
 
 const addProductToOrder = async ({ orderId, productId, price, quantity }) => {
     try {
-        // const {rows: [_orderProduct]} = await client.query(`
-        //     SELECT *
-        //     FROM order_products
-        //     WHERE "orderId"=$1 AND "productId"=$2;
-        // `, [orderId, productId]);
+        const {rows: [_orderProduct]} = await client.query(`
+            SELECT *
+            FROM order_products
+            WHERE "orderId"=$1 AND "productId"=$2;
+        `, [orderId, productId]);
 
-        // if (_orderProduct) {
-        //     throw Error('That product is already on the order.');
-        // };
+        if (_orderProduct) {
+            throw Error('That product is already on the order.');
+        };
 
         const {rows: [orderProduct]} = await client.query(`
             INSERT INTO order_products("productId", "orderId", price, quantity)
