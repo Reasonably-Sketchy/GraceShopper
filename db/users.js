@@ -17,6 +17,11 @@ async function createUser({ first, last, email, username, password }) {
             `,
       [first, last, email, username, hashedPassword]
     );
+
+    if (!user.isAdmin) {
+      delete user.isAdmin;
+    };
+
     if (user.password) {
       delete user.password;
     }
@@ -40,6 +45,11 @@ async function getUser({ username, password }) {
       // return the user object (without the password)
       return;
     }
+
+    if (!user.isAdmin) {
+      delete user.isAdmin
+    };
+
     delete user.password;
     return user;
   } catch (error) {
@@ -59,6 +69,11 @@ async function getUserById(id) {
             `,
       [id]
     );
+
+    if (!user.isAdmin) {
+      delete user.isAdmin;
+    };
+    
     if (user.password) {
       delete user.password;
     };

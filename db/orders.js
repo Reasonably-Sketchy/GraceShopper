@@ -97,10 +97,10 @@ const getAllOrders = async () => {
 async function getOrdersByUser({id}){
     try {
         const {rows: orders} = await client.query(`
-            SELECT orders.*, users.id AS "creatorName"
+            SELECT orders.*, users.id AS "buyerId"
             FROM orders
             JOIN users ON orders."userId" = users.id
-            WHERE "creatorId" = $1
+            WHERE "userId"=$1
         `, [id]);
         return orders;
 

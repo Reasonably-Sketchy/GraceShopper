@@ -8,8 +8,16 @@ const {
   getUser,
   getUserById,
   getUserByUserName,
+  getOrdersByUser,
 } = require('../db');
 const bcrypt = require("bcrypt");
+const { requireUser } = require('./utils');
+
+usersRouter.use((req, res, next) => {
+  console.log('A request is being made to /users...');
+  next();
+});
+
 
 usersRouter.post("/register", async (req, res, next) => {
   console.log("HERE");
@@ -90,5 +98,32 @@ usersRouter.post("/login", async (req, res, next) => {
 });
 
 // add users/me
+usersRouter.get("/me", async (req, res, next) => {
+  console.log('A request is being made to users/me')
+  const auth = req.header('Authorization');  
+  const prefix = 'Bearer ';
+  const token = auth.slice(prefix.length);
+  const { id } = jwt.verify(token, JWT_SECRET);
+  
+  try {
+      const user = await getUserById(id);
+      const userOrders = await getOrdersByUser(user);
+
+      if (userOrders) {
+          user.orders = userOrders;
+      } else {
+          user.orders = [];
+      };
+  
+      if (id == req.user.id) {
+          res.send(user);
+      };
+  // }
+  } catch({ name, message }) {
+      next({ name, message });
+  };
+});
+
+
 
 module.exports = usersRouter;
