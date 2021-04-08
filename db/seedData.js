@@ -171,6 +171,7 @@ async function createInitialUsers() {
             email: 'austin.thomas130@gmail.com',
             username: 'Austy',
             password: '12345678',
+            imageURL: 'https://scontent.fsac1-2.fna.fbcdn.net/v/t1.6435-9/47215028_10216685381274403_1759716923727151104_n.jpg?_nc_cat=103&ccb=1-3&_nc_sid=09cbfe&_nc_ohc=IDkCTG28XV8AX963sRI&_nc_ht=scontent.fsac1-2.fna&oh=bc1a235e65071334e3bee42e68c51616&oe=60948E74',
             isAdmin: true,
         });
       

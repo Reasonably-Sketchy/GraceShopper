@@ -2,8 +2,14 @@ require('dotenv').config();
 const {
     getAllProducts,
     getProductById, 
-    createProduct
+    createProduct,
+
+    getOrderProductById,
+    addProductToOrder,
+    updateOrderProduct,
+    destroyOrderProduct,
 } = require('../db')
+
 const client = require('../db/client');
 const { rebuildDB } = require('../db/seedData');
 const { getUser } = require('../db/users');
@@ -11,8 +17,6 @@ const { getUser } = require('../db/users');
 
 let productsFromDatabase, products, productsFromAdapter, createdProduct;
 let userFromDatabase, userFromAdapter;
-
-
 
 describe('Database', ()=> {
     beforeAll(async()=>{
@@ -119,6 +123,43 @@ describe('Database', ()=> {
 
     }) // end describe('Users')
 
-
-
-}) // end describe('Database')
+    describe('Order Products', () => {
+        const orderProductData = {
+          orderId: 1,
+          productId: 1,
+          price: 1000,
+          quantity: 10000 
+        }
+        let orderProductToCreateAndUpdate;
+        describe('addProductToOrder({ orderId, productId, price, quantity })', () => {
+          it('creates a new order_product, and return it', async () => {
+            orderProductToCreateAndUpdate = await addProductToOrder(orderProductData);
+            expect(orderProductToCreateAndUpdate.orderId).toBe(orderProductData.orderId);
+            expect(orderProductToCreateAndUpdate.productId).toBe(orderProductData.productId);
+            expect(orderProductToCreateAndUpdate.price).toBe(orderProductData.price);
+            expect(orderProductToCreateAndUpdate.quantity).toBe(orderProductData.quantity);
+          })
+        })
+        describe('updateOrderProduct({ id, price, quantity })', () => {
+          it('Finds the order with id equal to the passed in id. Updates the price or quantity as necessary.', async () => {
+            const neworderProductData = {id: orderProductToCreateAndUpdate.id, price: 15, quantity: 150};
+            orderProductToCreateAndUpdate = await updateOrderProduct(neworderProductData);
+            expect(orderProductToCreateAndUpdate.id).toBe(neworderProductData.id);
+            expect(orderProductToCreateAndUpdate.price).toBe(neworderProductData.price);
+            expect(orderProductToCreateAndUpdate.quantity).toBe(neworderProductData.quantity);
+          })
+        })
+        describe('destroyOrderProduct(id)', () => {
+          it('remove order_product from database', async () => {
+            const deletedOrderProduct = await destroyOrderProduct(orderProductToCreateAndUpdate.id);
+            expect(deletedOrderProduct.id).toBe(orderProductToCreateAndUpdate.id);
+            const {rows} = await client.query(`
+              SELECT * FROM order_products
+              WHERE id = ${deletedOrderProduct.id}
+            `)
+            expect(rows.length).toBe(0);
+          })
+        })
+    
+      })
+});// end describe('Database')
