@@ -74,12 +74,13 @@ async function createTables() {
             );
         `)
         
+        // need to change datePlaced
         await client.query(`
             CREATE TABLE orders (
                 id SERIAL PRIMARY KEY,
                 status TEXT DEFAULT 'created',
                 "userId" INTEGER REFERENCES users(id),
-                "datePlaced" DATE
+                "datePlaced" TEXT DEFAULT CURRENT_DATE
             );
         `)
 
@@ -207,7 +208,6 @@ async function createInitialOrders(){
         await createOrder({
             status: 'completed',
             userId: 4,
-            datePlaced: '09/10/20',
         })
 
         console.log("Finished creating orders!");
