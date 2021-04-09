@@ -12,13 +12,14 @@ function requireUser(req, res, next) {
 function requireAdmin(req, res, next) {
   if (!req.user.isAdmin) {
     next({
-      name: "Unauthorized",
+      name: "UnauthorizedError",
       message: "You must be an admin to perform this action",
     });
-  }
-
+  };
+  
   next();
-}
+};
+
 
 module.exports = {
   requireUser,

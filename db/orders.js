@@ -115,13 +115,13 @@ async function getCartByUser({id}){
             FROM orders
             JOIN users ON orders."userId" = users.id
             WHERE "creatorId" = $1
-            AND 'created' = true;
+            AND "status" = "created";
         `, [id])
         return orders
     } catch (error) {
         throw error
-    }
-}
+    };
+};
 
 async function createOrder({status, userId}){
     try {
@@ -134,8 +134,73 @@ async function createOrder({status, userId}){
         return order
     } catch (error) {
         throw error
-    }
-}
+    };
+};
+
+// UPDATE ORDER
+const updateOrder = async ({ id, status, userId }) => {
+    const updateFields = {};
+
+    if (status) {
+        updateFields.status = status;
+    };
+
+    if (userId) {
+        updateFields.userId = userId;
+    };
+
+    const setString = Object.keys(updateFields).map(
+        (key, index) => `"${key}"=$${index + 1}`
+    ).join(', ');
+
+    if (setString.length === 0) {
+        return;
+    };
+
+    try {
+        const { rows: [updatedOrder] } = await client.query(`
+            UPDATE orders
+            SET ${setString}
+            WHERE id=${id}
+            RETURNING *;
+        `, Object.values(updateFields));
+
+        return updatedOrder;
+    } catch(error) {
+        throw error;
+    };
+};
+
+// COMPLETE ORDER
+const completeOrder = async ({ id }) => {
+    try {
+        const { rows: [order] } = await client.query(`
+            UPDATE orders
+            SET "status"="completed"
+            WHERE id=$1
+            RETURNING *;
+        `, [id]);
+
+        return order;
+    } catch(error) {
+        throw error;
+    };
+};
+// CANCEL ORDER
+const cancelOrder = async (id) => {
+    try {
+        const { rows: [order] } = await client.query(`
+            UPDATE orders
+            SET "status"="cancelled"
+            WHERE id=$1
+            RETURNING *;
+        `, [id]);
+
+        return order;
+    } catch(error) {
+        throw error;
+    };
+};
 
 module.exports = {
     getOrderById,
@@ -143,5 +208,8 @@ module.exports = {
     getOrdersByUser,
     getOrdersByProduct,
     getCartByUser,
-    createOrder
+    createOrder,
+    updateOrder,
+    completeOrder,
+    cancelOrder,
 }
