@@ -9,6 +9,7 @@ const {
   getUserById,
   getUserByUserName,
   getOrdersByUser,
+  getCartByUser,
 } = require("../db");
 const bcrypt = require("bcrypt");
 const { requireUser, requireAdmin } = require("./utils");
@@ -107,11 +108,18 @@ usersRouter.get("/me", async (req, res, next) => {
   try {
     const user = await getUserById(id);
     const userOrders = await getOrdersByUser(user);
+    const userCart = await getCartByUser(user);
 
     if (userOrders) {
       user.orders = userOrders;
     } else {
       user.orders = [];
+    }
+
+    if (userCart) {
+      user.cart = userCart;
+    } else {
+      user.cart = [];
     }
 
     if (id == req.user.id) {
