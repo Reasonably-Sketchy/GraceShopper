@@ -6,8 +6,8 @@ const { requireUser, requireAdmin } = require("./utils");
 const {
   client,
   getAllOrders,
-  updateorder,
-  getOrdersById,
+  updateOrder,
+  getOrderById,
   getCartByUser,
 } = require("../db");
 
@@ -77,17 +77,28 @@ ordersRouter.get("/cart", requireUser, async (req, res, next) => {
   try {
     const cart = await getCartByUser(user);
 
-    res.send({ cart });
+    res.send(cart);
   } catch ({ name, message }) {
     next({ name, message });
   }
 });
 
-ordersRouter.post("/", requireUser, async (req, res, next) => {
-  const fields = { userId: req.user.Id, status: "created" };
+ordersRouter.post("/", async (req, res, next) => {
+  
+  // This block handles guest orders vs user carts
+  const fields = {};
+  if (req.user) {
+    fields.userId = req.user.id;
+    fields.status = "created";
+  } else if (!req.user) {
+    fields.userId = 1;
+    fields.status = "completed"
+  };
+  // 
+
   try {
-    const purchase = await createOrder(fields);
-    res.send({ purchase });
+    const order = await createOrder(fields);
+    res.send(order);
   } catch ({ name, message }) {
     next({ name, message });
   }
