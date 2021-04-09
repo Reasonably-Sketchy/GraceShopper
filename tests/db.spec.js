@@ -9,11 +9,14 @@ const {
     updateOrderProduct,
     destroyOrderProduct,
     getAllOrders,
+    getOrdersByUser,
+    getOrdersByProduct,
+    getCartByUser,
 } = require('../db')
 
 const client = require('../db/client');
 const { rebuildDB } = require('../db/seedData');
-const { getUser } = require('../db/users');
+const { getUser, createUser } = require('../db/users');
 
 
 let productsFromDatabase, products, productsFromAdapter, createdProduct;
@@ -28,25 +31,14 @@ describe('Database', ()=> {
             SELECT * FROM products;
         `)
         productsFromDatabase = products;
-        // console.log('PRODUCTS FROM DB: ', products)
         productsFromAdapter = await getAllProducts();
-        // console.log('PRODUCTS: ', productsFromAdapter);
-        // createdProduct = await createProduct({
-        //     userId: 'Bat',
-        //     description: 'yada',
-        //     price: 10,
-        //     inStock: true,
-        //     category: 'Food'
-        // });
-        // console.log('createdProduct?', createdProduct)
         userFromAdapter = await getUser({
-            useruserId: 'albert',
+            username: 'albert',
             password: 'bertie99',
         });
         const {rows: users} = await client.query(`
             SELECT * FROM USERS;
         `)
-        // productsFromDatabase = users;
 
     });
     afterAll(()=>{
@@ -78,127 +70,136 @@ describe('Database', ()=> {
             it('returns an array of products', ()=>{
                 expect(productsFromAdapter).toEqual(productsFromDatabase);
             });
-
-            it('each product has a userId property', ()=>{
-                const [product] = productsFromAdapter;
-                expect(product).toHaveProperty('userId');
-            })
         });
 
         describe('createProduct', ()=>{
-            it('returns an object', ()=>{
-                expect(typeof createdProduct).toBe('undefined')
+
+            it('should create and return a new product', async () => {
+              const newProduct = { 
+                name: 'NoFlex',
+                description: '0% guaranteed to get you jacked.',
+                price: 5000,
+                inStock: true,
+                category: 'Fitness',
+              };
+              const createdProduct = await createProduct(newProduct);
+              expect(createdProduct.name).toBe(newProduct.name);
+              expect(createdProduct.description).toBe(newProduct.description);
             });
-        })
+        });
 
         describe('getProductById', ()=>{
-            it('returns an array', ()=>{
-                expect(Array.isArray(productsFromAdapter)).toBe(true);
+
+            it('should return a product from the database', async ()=>{
+                const product = await getProductById(1);
+                expect(product.name).toBeTruthy();
             });
 
-            it('returns an array of products', ()=>{
-                expect(productsFromAdapter).toEqual(productsFromDatabase);
-            });
-
-            it('each product has a userId property', ()=>{
-                const [product] = productsFromAdapter;
-                expect(product).toHaveProperty('userId');
+            it('should return the correct product', async () => {
+              const product = await getProductById(1);
+              expect(product.id).toBe(1);
             })
+
+
         });
     }); // end decribe('Products')
     
     describe('Users', ()=>{
         // USER TESTS
-
-
         describe('getUser', ()=>{
             it('returns user, which is an object', ()=>{
                 expect(typeof userFromAdapter).toBe('object')
             });
 
+            it('returns the correct user', async () => {
+              const user = await getUser({username: 'Austy', password: '12345678'});
+              expect(user.username).toBe('Austy')
+            });
+
             it('user does not contain a property called password', ()=>{
                 const user = userFromAdapter;
                 expect(user.password).toBe(undefined);
-            })
-        })
+            });
+        });
+
+        describe('createUser', () => {
+          it('successfully creates and returns a new user', async () => {
+            const userToCreate = {
+              first: 'George',
+              last: 'Foreman',
+              email: 'georgie_be_grillin@gmail.com',
+              username: 'grillmaster',
+              password: 'alwaysBgri11in'
+            };
+            const createdUser = await createUser(userToCreate);
+            expect(createdUser.name).toBe(userToCreate.name);
+            expect(createdUser.email).toBe(userToCreate.email);
+          });
+
+        });
 
     }) // end describe('Users')
 
-    // describe('Orders', () => {
-    //     let orderToCreateAndUpdate = {status: 'created', userId: 4};
-    //     let routineToFail = {status: 'created', userId: 4};
-    //     const newRoutineData = {status: 'completed', userId: 4}
-    //     describe('getAllOrders', () => {
-    //       it('Returns a list of orders, includes the products with them', async () => {
-    //         const ordersFromDB = await getAllOrders();
-    //         const {data: publicRoutinesFromAPI} = await axios.get(`${API_URL}/api/routines`);
-    //         expect(publicRoutinesFromAPI).toEqual(ordersFromDB);
-    //       });
-    //     });
-        
-    //     describe('POST /routines (*)', () => {
-    //       it('Creates a new routine, with the creatorId matching the logged in user', async () => {
-    //         const {data: respondedRoutine} = await axios.post(`${API_URL}/api/routines`, orderToCreateAndUpdate, { headers: {'Authorization': `Bearer ${token}`} });
-            
-    //         expect(respondedRoutine.userId).toEqual(orderToCreateAndUpdate.userId);
-    //         expect(respondedRoutine.goal).toEqual(orderToCreateAndUpdate.goal);
-    //         expect(respondedRoutine.userId).toEqual(orderToCreateAndUpdate.userId);
-    //         expect(respondedRoutine.creatorId).toEqual(registeredUser.id);
-    //         orderToCreateAndUpdate = respondedRoutine;
-    //       });
-    //       it('Requires logged in user', async () => {
-    //         let noLoggedInUserResp, noLoggedInUserErrResp;
-    //         try {
-    //           noLoggedInUserResp = await axios.post(`${API_URL}/api/routines`, routineToFail);
-    //         } catch(err) {
-    //           noLoggedInUserErrResp = err.response;
-    //         }
-    //         expect(noLoggedInUserResp).toBeFalsy();
-    //         expect(noLoggedInUserErrResp.data).toBeTruthy();
-    //       });
-    //     });
-    //     describe('PATCH /routines/:routineId (**)', () => {
-    //       it('Updates a routine, notably changing public/private, the userId, or the goal', async () => {
-    //         const {data: respondedRoutine} = await axios.patch(`${API_URL}/api/routines/${orderToCreateAndUpdate.id}`, newRoutineData, { headers: {'Authorization': `Bearer ${token}`} });
-    //         expect(respondedRoutine.userId).toEqual(newRoutineData.userId);
-    //         expect(respondedRoutine.goal).toEqual(newRoutineData.goal);
-    //         orderToCreateAndUpdate = respondedRoutine;
-    //       });
-    //     });
-    //     describe('DELETE /routines/:routineId (**)', () => {
-    //       it('Hard deletes a routine. Makes sure to delete all the routineActivities whose routine is the one being deleted.', async () => {
-    //         const {data: deletedRoutine} = await axios.delete(`${API_URL}/api/routines/${orderToCreateAndUpdate.id}`, { headers: {'Authorization': `Bearer ${token}`} });
-    //         const shouldBeDeleted = await getRoutineById(deletedRoutine.id);
-    //         expect(deletedRoutine.id).toBe(orderToCreateAndUpdate.id);
-    //         expect(deletedRoutine.userId).toBe(orderToCreateAndUpdate.userId);
-    //         expect(deletedRoutine.goal).toBe(orderToCreateAndUpdate.goal);
-    //         expect(shouldBeDeleted).toBeFalsy();
-    //       });
-    //     });
-    //     describe('POST /routines/:routineId/activities', () => {
-    //       let newRoutine
-    //       it('Attaches a single activity to a routine.', async () => {
-    //         newRoutine = await createRoutine({creatorId: registeredUser.id, userId: 'Pull Ups', goal: '10 pull ups'})
-    //         const {data: respondedRoutineActivity} = await axios.post(`${API_URL}/api/routines/${newRoutine.id}/activities`, {routineId: newRoutine.id, ...routineActivityToCreateAndUpdate}, { headers: {'Authorization': `Bearer ${token}`} });
-    //         expect(respondedRoutineActivity.routineId).toBe(newRoutine.id);
-    //         expect(respondedRoutineActivity.activityId).toBe(routineActivityToCreateAndUpdate.activityId);
-    //         routineActivityToCreateAndUpdate = respondedRoutineActivity;
-    //       });
-    //       it('Prevents duplication on (routineId, activityId) pair.', async () => {
-    //         let duplicateIds, duplicateIdsResp;
-    //         try {
-    //           duplicateIds = await axios.post(`${API_URL}/api/routines/${newRoutine.id}/activities`, routineActivityToCreateAndUpdate, { headers: {'Authorization': `Bearer ${token}`} });
-    //         } catch(err) {
-    //           duplicateIdsResp = err.response;
-    //         }
-    //         expect(duplicateIds).toBeFalsy();
-    //         expect(duplicateIdsResp.data).toBeTruthy();
-    //       });
-    //     });
-    //   });
+    describe('Orders', () => {
+
+      let allOrders;
+      let databaseOrders;
+      let user;
+      let testProduct;
+      beforeAll(async () => {
+        allOrders = await getAllOrders();
+        const {rows} = await client.query(`
+          SELECT *
+          FROM orders;
+        `);
+        databaseOrders = rows;
+        user = await getUser({username: 'Austy', password: '12345678'});
+      });
 
 
+      describe('getAllOrders', () => {
 
+        it('returns an array', () => {
+          expect(Array.isArray(allOrders)).toBe(true);
+        });
+
+        it('returns an array of orders from the database', () => {
+          expect(allOrders[0].id).toBe(databaseOrders[0].id);
+          expect(allOrders[0].userId).toBe(databaseOrders[0].userId);
+        });
+
+        it('returns orders that include products', () => {
+          expect(allOrders[3].products).toBeTruthy();
+        });
+      });
+
+      describe('getOrdersByUser', () => {
+        it(`returns the user's orders`, async () => {
+          const userOrders = await getOrdersByUser(user);
+          const databaseUserOrders = databaseOrders.filter((order) => {return order.userId == user.id});
+          expect(userOrders[0].id).toEqual(databaseUserOrders[0].id);
+        });
+      });
+
+      describe('getOrdersByProduct', () => {
+        it(`returns orders that contain the product`, async () => {
+          const testProduct = productsFromDatabase[0]
+          const productOrders = await getOrdersByProduct(testProduct);
+          // expect(productOrders[0].products)
+        })
+      });
+
+      describe('getCartByUser', () => {
+        it(`returns the user's cart`, async () => {
+          const userCart = await getCartByUser(user);
+          const databaseUserOrders = databaseOrders.filter((order) => {return order.userId == user.id});
+          const databaseUserCart = databaseUserOrders.find((order) => {return order.status == 'created'})
+          expect(userCart.status).toEqual(databaseUserCart.status);
+
+        })
+      })
+
+    })
 
     describe('Order Products', () => {
         const orderProductData = {

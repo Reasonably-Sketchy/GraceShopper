@@ -152,7 +152,7 @@ async function createInitialUsers() {
             last: 'User',
             email: 'guest@graceshopper.com',
             username: 'Guest',
-            password: 'Guest',
+            password: 'Guest123',
         })
 
         await createUser({ 
