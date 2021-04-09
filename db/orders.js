@@ -115,7 +115,7 @@ async function getCartByUser({id}){
             FROM orders
             JOIN users ON orders."userId" = users.id
             WHERE "creatorId" = $1
-            AND 'created' = true;
+            AND "status" = "created";
         `, [id])
         return orders
     } catch (error) {
