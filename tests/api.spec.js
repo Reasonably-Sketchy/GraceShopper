@@ -91,6 +91,8 @@ describe('API', ()=> {
                 newOrder = await createOrder({userId: 1, status: 'created'});
                 productToAdd = await getProductById(1);
                 newOrderProduct = await addProductToOrder({orderId: newOrder.id, productId: productToAdd.id, price: productToAdd.price, quantity: 2});
+                console.log('NEW ORDER', newOrderProduct)
+                console.log('PRODUCT TO ADD ', productToAdd)
 
                 const {data: response} = await axios.post(`${API_URL}/api/orders/${newOrder.id}/products`, {orderId: newOrder.id, ...newOrderProduct}, {headers: {'Authorization': `Bearer ${token}`}});
                 
