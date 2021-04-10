@@ -1,5 +1,5 @@
 const express = require('express');
-const orderProductRouter = express.Router();
+const orderProductsRouter = express.Router();
 const {requireUser, requiredNotSent} = require("./utils");
 const jwt = require("jsonwebtoken");
 const {
@@ -12,7 +12,7 @@ const {
 } = require('../db');
 const productsRouter = require('./products');
 
-orderProductRouter.get('/', async (req, res, next)=>{
+orderProductsRouter.get('/', async (req, res, next)=>{
     try { 
         const orders = await getAllOrders();
         
@@ -24,7 +24,7 @@ orderProductRouter.get('/', async (req, res, next)=>{
 
 
 
-orderProductRouter.patch('/order_products/:orderProductId', 
+orderProductsRouter.patch('/order_products/:orderProductId', 
     requireUser,
     requiredNotSent({requiredParams: ['price', 'quantity']}),
     async (req, res, next) => {
@@ -47,7 +47,7 @@ orderProductRouter.patch('/order_products/:orderProductId',
         }
 });
 
-orderProductRouter.delete('/order_products/:orderProductId', requireUser, async(req, res, next)=>{
+orderProductsRouter.delete('/order_products/:orderProductId', requireUser, async(req, res, next)=>{
     try {
         const deleteRoutineActivity = await destroyOrderProduct(req.params.orderProductId)
         res.send({success: true, ...deleteRoutineActivity});

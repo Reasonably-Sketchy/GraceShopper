@@ -1,11 +1,9 @@
 // This file is for creating the express server
 const express = require('express');
 const apiRouter = express.Router();
-
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const jwt = require('jsonwebtoken');
-const { JWT_SECRET = "landfillbait" } = process.env;
-// NEED TO MOVE TO PROCESS.ENV ^^^
-
+const { JWT_SECRET } = process.env;
 const { getUserById } = require('../db');
 
 // MIDDLEWARE
@@ -42,6 +40,16 @@ apiRouter.use((req, res, next) => {
     };
     
     next();
+});
+
+// PAY ROUTER
+apiRouter.post('/pay', async (req, res, next) => {
+    try {
+        const charge = await stripe.charges.create(req.body);
+        res.status(200).send({ success: charge });
+    } catch (error) {
+        res.status(500).send({ error });
+    };
 });
 
 // ROUTERS
