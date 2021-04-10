@@ -10,7 +10,9 @@ async function getOrderById(id){
             WHERE id=$1;
         `, [id])
  
-        return order;
+        // return order;
+        return attachProductsToOrders([order]);
+
     } catch (error) {
         throw error
     }

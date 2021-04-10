@@ -23,7 +23,6 @@ orderProductsRouter.get('/', async (req, res, next)=>{
 });
 
 
-
 orderProductsRouter.patch('/order_products/:orderProductId', 
     requireUser,
     requiredNotSent({requiredParams: ['price', 'quantity']}),
