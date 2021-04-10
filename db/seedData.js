@@ -197,6 +197,7 @@ async function createInitialUsers() {
     }
 }
 
+
 async function createInitialOrders(){
 
     try {
