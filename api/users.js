@@ -1,5 +1,4 @@
-const { JWT_SECRET = "landfillbait" } = process.env;
-// NEED TO MOVE TO PROCESS.ENV ^^^
+const { JWT_SECRET } = process.env;
 const express = require("express");
 const usersRouter = express.Router();
 const jwt = require("jsonwebtoken");
@@ -11,7 +10,6 @@ const {
   getOrdersByUser,
   getCartByUser,
 } = require("../db");
-const bcrypt = require("bcrypt");
 const { requireUser, requireAdmin } = require("./utils");
 
 usersRouter.use((req, res, next) => {
@@ -98,7 +96,7 @@ usersRouter.post("/login", async (req, res, next) => {
 });
 
 // add users/me
-usersRouter.get("/me", async (req, res, next) => {
+usersRouter.get("/me", requireUser, async (req, res, next) => {
   console.log("A request is being made to users/me");
   const auth = req.header("Authorization");
   const prefix = "Bearer ";
