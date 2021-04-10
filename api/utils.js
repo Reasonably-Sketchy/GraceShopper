@@ -1,3 +1,4 @@
+
 function requireUser(req, res, next) {
   if (!req.user) {
     next({
@@ -44,7 +45,20 @@ const requiredNotSent = ({ requiredParams, atLeastOne = false }) => {
   }
 }
 
+function requireAdmin(req, res, next) {
+  if (!req.user.isAdmin) {
+    next({
+      name: "UnauthorizedError",
+      message: "You must be an admin to perform this action",
+    });
+  };
+  
+  next();
+};
+
+
 module.exports = {
   requireUser,
+  requireAdmin,
   requiredNotSent
 };

@@ -15,6 +15,21 @@ const {
     getAllUsers,
 } = require('./users');
 
+const {
+    getOrderById,
+    getAllOrders,
+    getOrdersByUser,
+    getOrdersByProduct,
+    getCartByUser,
+    createOrder,
+} = require('./orders');
+
+const {
+    getOrderProductById,
+    addProductToOrder,
+    updateOrderProduct,
+    destroyOrderProduct,
+} = require('./order_products');
 
 // Drop tables
 async function dropTables() {
@@ -66,12 +81,13 @@ async function createTables() {
             );
         `)
         
+        // need to change datePlaced
         await client.query(`
             CREATE TABLE orders (
                 id SERIAL PRIMARY KEY,
                 status TEXT DEFAULT 'created',
                 "userId" INTEGER REFERENCES users(id),
-                "datePlaced" DATE
+                "datePlaced" TEXT DEFAULT CURRENT_DATE
             );
         `)
 
@@ -128,20 +144,16 @@ async function createInitialProducts() {
     }
 }
 
-async function createInitialOrders() {
-    try {
-        console.log("Starting to create orders...");
-
-    } catch (error) {
-        console.log("Error creating orders!");
-        throw error
-    }
-}
-
-
 async function createInitialUsers() {
     try {
         console.log("Starting to create users...")
+        await createUser({
+            first: 'Guest',
+            last: 'User',
+            email: 'guest@graceshopper.com',
+            username: 'Guest',
+            password: 'Guest123',
+        })
 
         await createUser({ 
             first: 'Al',
@@ -166,6 +178,16 @@ async function createInitialUsers() {
             username: 'glamgal',
             password: 'soglam',
         });
+
+        await createUser({ 
+            first: 'Austin',
+            last: 'Thomas',
+            email: 'austin.thomas130@gmail.com',
+            username: 'Austy',
+            password: '12345678',
+            imageURL: 'https://scontent.fsac1-2.fna.fbcdn.net/v/t1.6435-9/47215028_10216685381274403_1759716923727151104_n.jpg?_nc_cat=103&ccb=1-3&_nc_sid=09cbfe&_nc_ohc=IDkCTG28XV8AX963sRI&_nc_ht=scontent.fsac1-2.fna&oh=bc1a235e65071334e3bee42e68c51616&oe=60948E74',
+            isAdmin: true,
+        });
       
         console.log("Finished creating users!");
 
@@ -175,63 +197,80 @@ async function createInitialUsers() {
     }
 }
 
-// async function createInitialOrders(){
-//     try {
-//         // const [albert, sandra, glamgal] = await getAllUsers();
-//         console.log(await getAllUsers())
-//         console.log("Starting to create orders...")
-        
 
-//         await createOrder({
-//             status: 'created',
-//             userId: albert.id,
-//             date: "today"
-//         })
-//         await createOrder({
-//             status: 'cancelled',
-//             userId: sandra.id,
-//             date: "today"
-//         })
-//         await createOrder({
-//             status: 'completed',
-//             userId: glamgal.id,
-//             date: "today"
-//         })
+async function createInitialOrders(){
 
-//         console.log("Finished creating orders!");
-//     } catch (error) {
-//         console.log("Error creating orders!")
-//         throw error
-//     }
-// }
+    try {
+        console.log("Starting to create orders...")
 
-// async function createInitialOrderProducts(order_products) {
+        await createOrder({
+            status: 'created',
+            userId: 2,
+        })
+        await createOrder({
+            status: 'cancelled',
+            userId: 3,
+        })
+        await createOrder({
+            status: 'completed',
+            userId: 4,
+        })
 
-//     const [productOne, productTwo, productThree] = order_products
+        await createOrder({
+            status: 'created',
+            userId: 5,
+        });
 
-//     try {
-//         console.log("Starting to create order_products...")
+        await createOrder({
+            status: 'completed',
+            userId: 5,
+        });
 
-//         const orderOne = await createOrderProducts(productOne.id, {
-//             content: "This should be an order for ScamWOW!"
-//         });
+        console.log("Finished creating orders!");
+    } catch (error) {
+        console.log("Error creating orders!")
+        throw error
+    }
+}
 
-//         const orderTwo = await createOrderProducts(productTwo.id, {
-//             content: "This should be an order for dog armor"
-//         });
+async function createInitialOrderProducts() {
+    try {
+        console.log("Starting to create order_products...")
 
-//         const orderThree = await createOrderProducts(productThree.id, {
-//             content: "this should be an order for pasta"
-//         });
+        await addProductToOrder({
+            orderId: 4,
+            productId: 1,
+            price: 100,
+            quantity: 1,
+        });
 
-//         console.log("Finished creating products!")
+        await addProductToOrder({
+            orderId: 4,
+            productId: 2,
+            price: 1000,
+            quantity: 2,
+        });
 
-//         return [orderOne, orderTwo, orderThree];
-//     } catch (error) {
-//         console.error("Error creating Products")
-//         throw error;
-//     }
-// }
+        await addProductToOrder({
+            orderId: 5,
+            productId: 1,
+            price: 300,
+            quantity: 3,
+        });
+
+        await addProductToOrder({
+            orderId: 5,
+            productId: 3,
+            price: 70,
+            quantity: 10,
+        });
+
+        console.log("Finished creating order products!")
+    } catch (error) {
+        console.error("Error creating Products")
+        throw error;
+    }
+};
 
 // RebuildDB function:
 
@@ -242,8 +281,8 @@ const rebuildDB = async () => {
         await createTables();
         await createInitialProducts();
         await createInitialUsers();
-        // await createInitialOrders();
-        // await createInitialOrderProducts();
+        await createInitialOrders();
+        await createInitialOrderProducts();
     } catch (error) {
         console.log('Error during rebuildDB');
         throw error;

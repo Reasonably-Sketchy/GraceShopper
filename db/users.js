@@ -1,8 +1,8 @@
 const { createSecureServer } = require("http2");
 const client = require(`./client`);
-const bcrypt = require("bcrypt");
+const bcrypt = require('bcrypt');
 
-async function createUser({ first, last, email, username, password }) {
+async function createUser({ first, last, email, username, password, imageURL, isAdmin }) {
   const SALT_COUNT = 10;
   const hashedPassword = await bcrypt.hash(password, SALT_COUNT);
   try {
@@ -10,17 +10,21 @@ async function createUser({ first, last, email, username, password }) {
       rows: [user],
     } = await client.query(
       `
-                INSERT INTO users(first, last, email, username, password)
-                VALUES($1, $2, $3, $4, $5)
+                INSERT INTO users(first, last, email, username, password, "imageURL", "isAdmin")
+                VALUES($1, $2, $3, $4, $5, $6, $7)
                 ON CONFLICT (email) DO NOTHING
                 RETURNING *;
             `,
-      [first, last, email, username, hashedPassword]
+      [first, last, email, username, hashedPassword, imageURL, isAdmin]
     );
+
+    if (!user.isAdmin) {
+      delete user.isAdmin;
+    };
+
     if (user.password) {
       delete user.password;
-    }
-    console.log('USER: ', user)
+    };
     return user;
   } catch (error) {
     throw error;
@@ -28,17 +32,26 @@ async function createUser({ first, last, email, username, password }) {
 }
 
 async function getUser({ username, password }) {
+  // add some validation
   try {
     const user = await getUserByUserName(username);
     // const user = await getUserByUserName(username);
     const hashedPassword = user.password;
     const passwordsMatch = await bcrypt.compare(password, hashedPassword);
-    if (passwordsMatch) {
+
+
+    if (!passwordsMatch) {
       // return the user object (without the password)
-      delete user.password;
-      return user;
+      return;
     }
-  } catch (user) {
+
+    if (!user.isAdmin) {
+      delete user.isAdmin
+    };
+
+    delete user.password;
+    return user;
+  } catch (error) {
     throw error;
   }
 }
@@ -55,9 +68,14 @@ async function getUserById(id) {
             `,
       [id]
     );
+
+    if (!user.isAdmin) {
+      delete user.isAdmin;
+    };
+    
     if (user.password) {
       delete user.password;
-    }
+    };
     return user;
   } catch (user) {
     throw error;
@@ -76,6 +94,7 @@ async function getUserByUserName(username) {
             `,
       [username]
     );
+
     return user;
   } catch (error) {
     throw error;
