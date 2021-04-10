@@ -105,7 +105,7 @@ ordersRouter.post("/", async (req, res, next) => {
 });
 
 
-ordersRouter.patch('/orders/:orderId', 
+ordersRouter.patch('/:orderId', 
     requireUser, 
     requiredNotSent({requiredParams: ['id', 'userId']}), 
     async (req, res, next)=>{
@@ -134,7 +134,7 @@ ordersRouter.patch('/orders/:orderId',
         }
 })
 
-ordersRouter.delete("/orders/:orderId", requireUser, async(req, res, next)=>{
+ordersRouter.delete("/:orderId", requireUser, async(req, res, next)=>{
     try {
         const thisOrder = await getOrderById(req.params.orderId);
 
@@ -157,4 +157,39 @@ ordersRouter.delete("/orders/:orderId", requireUser, async(req, res, next)=>{
     }
 });
 
-module.exports = productsRouter;
+ordersRouter.post("/:orderId/products", 
+    // requiredNotSent({requiredParams: ['orderId', 'productId']}), 
+    async (req, res, next) => {
+
+      console.log('REQ.BODY: ', req.body);
+
+        try {        
+            const {productId} = req.body;
+            const {orderId} = req.params;
+            const thisOrderProduct = await getOrdersByProduct({id: orderId})
+            const currentCart = thisOrderProduct && thisOrderProduct.filter(order_products => order_products.productId === productId)
+
+            if (currentCart && currentCart.length) {
+                res.send(currentCart+1)
+            } else {
+                const addToCart = await addProductToOrder({productId, orderId});
+                if (addToCart) {
+                    res.send(addToCart)
+                } else {
+                    next({
+                        name: 'FailedToAddToCart',
+                        message: `There was an error adding ${productId} to ${orderId}`
+                    })
+                }
+            }
+
+            if(!orderId){
+                throw Error('Order does not exist')
+            };
+
+        } catch ({name, message}) {
+            next({name, message});
+        }; 
+});
+
+module.exports = ordersRouter;

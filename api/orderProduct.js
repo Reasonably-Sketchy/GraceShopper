@@ -22,37 +22,7 @@ orderProductRouter.get('/', async (req, res, next)=>{
     } 
 });
 
-orderProductRouter.post('/orders/:orderId/products', 
-    requiredNotSent({requiredParams: ['orderId', 'productId']}), 
-    async (req, res, next)=>{
-        try {        
-            const {productId} = req.body;
-            const {orderId} = req.params;
-            const thisOrderProduct = await getOrdersByProduct({id: orderId})
-            const currentCart = thisOrderProduct && thisOrderProduct.filter(order_products => order_products.productId === productId)
 
-            if (currentCart && currentCart.length) {
-                res.send(currentCart+1)
-            } else {
-                const addToCart = await addProductToOrder({productId, orderId});
-                if (addToCart) {
-                    res.send(addToCart)
-                } else {
-                    next({
-                        name: 'FailedToAddToCart',
-                        message: `There was an error adding ${productId} to ${orderId}`
-                    })
-                }
-            }
-
-            if(!orderId){
-                throw Error('Order does not exist')
-            };
-
-        } catch ({name, message}) {
-            next({name, message});
-        } 
-});
 
 orderProductRouter.patch('/order_products/:orderProductId', 
     requireUser,
