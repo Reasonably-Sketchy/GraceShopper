@@ -90,7 +90,7 @@ describe('API', ()=> {
             it('Adds a product to an order', async()=>{
                 newOrder = await createOrder({userId: 1, status: 'created'});
                 productToAdd = await getProductById(1);
-                newOrderProduct = await addProductToOrder({orderId: newOrder.id, productId: productToAdd.id, price: productToAdd.price, quantity: 2});
+                // newOrderProduct = await addProductToOrder({orderId: newOrder.id, productId: productToAdd.id, price: productToAdd.price, quantity: 2});
                 console.log('NEW ORDER', newOrderProduct)
                 console.log('PRODUCT TO ADD ', productToAdd)
 

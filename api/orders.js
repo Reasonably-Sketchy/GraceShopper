@@ -158,7 +158,7 @@ ordersRouter.delete("/:orderId", requireUser, async(req, res, next)=>{
 });
 
 ordersRouter.post("/:orderId/products", 
-    // requiredNotSent({requiredParams: ['orderId', 'productId']}), 
+    requiredNotSent({requiredParams: ['orderId', 'productId']}), 
     async (req, res, next) => {
 
       console.log('REQ.BODY: ', req.body);
