@@ -9,15 +9,15 @@ const {
   getUserById,
   getUserByUserName,
   getOrdersByUser,
-} = require('../db');
+  getCartByUser,
+} = require("../db");
 const bcrypt = require("bcrypt");
-const { requireUser } = require('./utils');
+const { requireUser, requireAdmin } = require("./utils");
 
 usersRouter.use((req, res, next) => {
-  console.log('A request is being made to /users...');
+  console.log("A request is being made to /users...");
   next();
 });
-
 
 usersRouter.post("/register", async (req, res, next) => {
   console.log("HERE");
@@ -55,7 +55,7 @@ usersRouter.post("/register", async (req, res, next) => {
         expiresIn: "1w",
       }
     );
-    
+
     console.log("USER", user);
     res.send({
       message: "thank you for signing up",
@@ -63,7 +63,7 @@ usersRouter.post("/register", async (req, res, next) => {
       token,
     });
   } catch (error) {
-    console.error(error)
+    console.error(error);
     throw error;
   }
 });
@@ -74,12 +74,12 @@ usersRouter.post("/login", async (req, res, next) => {
       name: "MissingCredentialsError",
       message: "Please supply both a username and password",
     });
-  };
+  }
 
   try {
     const user = await getUser({ username, password });
     if (user) {
-      const token = jwt.sign(user, JWT_SECRET, { expiresIn: '7d' });
+      const token = jwt.sign(user, JWT_SECRET, { expiresIn: "7d" });
       res.send({
         message: "you're logged in!",
         user,
@@ -99,31 +99,49 @@ usersRouter.post("/login", async (req, res, next) => {
 
 // add users/me
 usersRouter.get("/me", async (req, res, next) => {
-  console.log('A request is being made to users/me')
-  const auth = req.header('Authorization');  
-  const prefix = 'Bearer ';
+  console.log("A request is being made to users/me");
+  const auth = req.header("Authorization");
+  const prefix = "Bearer ";
   const token = auth.slice(prefix.length);
   const { id } = jwt.verify(token, JWT_SECRET);
-  
-  try {
-      const user = await getUserById(id);
-      const userOrders = await getOrdersByUser(user);
 
-      if (userOrders) {
-          user.orders = userOrders;
-      } else {
-          user.orders = [];
-      };
-  
-      if (id == req.user.id) {
-          res.send(user);
-      };
-  // }
-  } catch({ name, message }) {
-      next({ name, message });
-  };
+  try {
+    const user = await getUserById(id);
+    const userOrders = await getOrdersByUser(user);
+    const userCart = await getCartByUser(user);
+
+    if (userOrders) {
+      user.orders = userOrders;
+    } else {
+      user.orders = [];
+    }
+
+    if (userCart) {
+      user.cart = userCart;
+    } else {
+      user.cart = [];
+    }
+
+    if (id == req.user.id) {
+      res.send(user);
+    }
+    // }
+  } catch ({ name, message }) {
+    next({ name, message });
+  }
 });
 
-
+usersRouter.get("/:userId/orders", requireAdmin, async (req, res, next) => {
+  const { userId } = req.params;
+  try {
+    const user = await getUserById(userId);
+    if (user) {
+      const orders = await getOrdersByUser(user);
+      res.send(orders);
+    }
+  } catch ({ name, message }) {
+    next({ name, message });
+  }
+});
 
 module.exports = usersRouter;
