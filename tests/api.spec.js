@@ -10,23 +10,24 @@ const { createOrder, getOrdersByProduct } = require('../db/orders');
 const { SERVER_ADDRESS = 'http://localhost:', PORT = 3000 } = process.env;
 const API_URL = process.env.API_URL || SERVER_ADDRESS + PORT;
 
-describe('API', () => {
-
+describe('API', ()=> {
     beforeAll(async() => {
         await rebuildDB();
-      })
-      afterAll(async() => {
-        await client.end();
-      })
-      xit('responds to a request at /api/health with a message specifying it is healthy', async () => {
-        try {
-            const res = await axios.get(`${API_URL}/api/health`);
-            expect(typeof res.data.message).toEqual('string');
-    
-        } catch(error) {
-            console.error('Line 19', error)
-        }
-      });
+    });
+
+    afterAll(() => {
+        client.end();
+    });
+
+    xit('responds to a request at /api/health with a message specifying it is healthy', async () => {
+    try {
+        const res = await axios.get(`${API_URL}/api/health`);
+        expect(typeof res.data.message).toEqual('string');
+
+    } catch(error) {
+        console.error('Line 19', error)
+    }
+    });
 
     describe('Products', () => {
         let products;

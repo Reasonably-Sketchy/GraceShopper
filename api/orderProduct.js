@@ -84,61 +84,6 @@ orderProductRouter.delete('/order_products/:orderProductId', requireUser, async(
     } catch (error) {
         next(error)
     }
-})
-
-
-// these should be added to orders api when created, or wherever checkout is
-
-// orderRouter.patch('/orders/:orderId', 
-//     requireUser, 
-//     requiredNotSent({requiredParams: ['id', 'userId']}), 
-//     async (req, res, next)=>{
-//         try {
-//             const {orderId} = req.params;
-//             const iExist = await getOrderById(orderId);
-//             if(!iExist) {
-//                 next({   
-//                     name: 'iDontExist',
-//                     message: `Order ${orderId} does not exist`
-//                 })
-//             } else {
-//                 const {id, userId} = req.body;
-//                 const updatedOrder = await updateOrder({id: orderId, id, userId})
-//                 if(updatedOrder){
-//                     res.send(updatedOrder)
-//                 } else {
-//                     next({
-//                         name: 'FailedToUpdate',
-//                         message: 'Your order could not be updated'
-//                     })
-//                 }
-//             }
-//         } catch (error) {
-//             next(error)
-//         }
-// })
-
-// orderRouter.delete("/orders/:orderId", requireUser, async(req, res, next)=>{
-//     try {
-//         const thisOrder = await getOrderById(req.params.orderId);
-
-//         if (thisOrder && thisOrder.author.id === req.params.orderId) {
-//             const 
-//         } else {
-//             thisOrder
-//                 ? {
-//                     name: "UnauthorizedUserError",
-//                     message: "You cannot cancel an order that is not yours"
-//                     }
-//                 : {
-//                     name: "NotFoundError",
-//                     message: "You dun goofed, how did you even get here?"
-//                 }
-//         }
-
-//     } catch ({name, message}) {
-//         next({name, message});
-//     }
-// });
+});
 
 module.exports = orderProductRouter;
