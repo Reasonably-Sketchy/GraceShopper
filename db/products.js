@@ -23,6 +23,7 @@ async function getAllProducts() {
             SELECT *
             FROM products;
         `);
+        console.log('ROWS', rows)
     return rows;
   } catch (error) {
     throw error;
