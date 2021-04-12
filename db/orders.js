@@ -26,6 +26,7 @@ const reduceOrders = (orderProductPairs) => {
             status,
             userId,
             datePlaced,
+            orderProductId,
             productId,
             price,
             quantity,
@@ -36,7 +37,8 @@ const reduceOrders = (orderProductPairs) => {
         } = order;
 
         const product = {
-            id: productId,
+            orderProductId: orderProductId,
+            productId: productId,
             name: productName,
             description,
             imageURL,
@@ -66,7 +68,7 @@ const getAllOrders = async () => {
     try {
         const {rows: orders} = await client.query(`
             SELECT orders.id, orders.status, orders."userId", orders."datePlaced",
-            order_products."productId", order_products."orderId", order_products.price, order_products.quantity, 
+            order_products.id AS "orderProductId", order_products."productId", order_products."orderId", order_products.price, order_products.quantity, 
             products.name AS "productName", products.description, products."imageURL",
             users.username
             FROM orders

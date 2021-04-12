@@ -9,6 +9,7 @@ const {
   updateOrder,
   getOrderById,
   getCartByUser,
+  createOrder,
 } = require("../db");
 
 ordersRouter.use((req, res, next) => {
@@ -82,7 +83,9 @@ ordersRouter.get("/cart", requireUser, async (req, res, next) => {
   const user = req.user;
   try {
     const cart = await getCartByUser(user);
-
+    if (!cart) {
+      throw Error('No active user cart.')
+    };
     res.send(cart);
   } catch ({ name, message }) {
     next({ name, message });
