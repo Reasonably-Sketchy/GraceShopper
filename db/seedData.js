@@ -137,7 +137,7 @@ async function createInitialProducts() {
             price: 150,
             imageURL: 'https://cdn.pixabay.com/photo/2014/04/03/09/57/bucket-309439_960_720.png',
             inStock: true,
-            category: 'cleaner'
+            category: 'household'
         });
         await createProduct({
             name: 'G-G-G-Gia!',
@@ -145,7 +145,7 @@ async function createInitialProducts() {
             price: 800,
             imageURL: 'https://www.lilyardor.com/wp-content/uploads/2019/04/IMG_1133-1080x675.jpg', 
             inStock: true,
-            category: 'plant'
+            category: 'garden'
         });
         await createProduct({
             name: 'Snuggle',
@@ -153,7 +153,7 @@ async function createInitialProducts() {
             price: 350,
             imageURL: 'https://hip2save.com/wp-content/uploads/2020/05/woman-wearable-blanket-.jpg', 
             inStock: true,
-            category: 'robe'
+            category: 'clothes'
         });
         await createProduct({
             name: 'Lunar Boots',
@@ -161,7 +161,7 @@ async function createInitialProducts() {
             price: 1000,
             imageURL: 'https://images-na.ssl-images-amazon.com/images/I/71VD%2BMbQcrL._AC_SX425_.jpg', 
             inStock: true,
-            category: 'shoe'
+            category: 'clothes'
         });
         await createProduct({
             name: 'Joe Backman BBQ',
@@ -169,7 +169,7 @@ async function createInitialProducts() {
             price: 1850,
             imageURL: 'https://images-na.ssl-images-amazon.com/images/I/81YSZkz4wzL._AC_SL1500_.jpg', 
             inStock: true,
-            category: 'grill'
+            category: 'cooking'
         });
         await createProduct({
             name: 'Slam Slice',
@@ -177,7 +177,7 @@ async function createInitialProducts() {
             price: 120,
             imageURL: 'https://images-na.ssl-images-amazon.com/images/I/512X9AqCWjL._AC_SL1000_.jpg', 
             inStock: true,
-            category: 'food mincer'
+            category: 'cooking'
         });
         await createProduct({
             name: 'Drink Weight',
@@ -185,7 +185,7 @@ async function createInitialProducts() {
             price: 200,
             imageURL: 'https://images-na.ssl-images-amazon.com/images/I/61UDS9og1qL._AC_SX425_.jpg', 
             inStock: true,
-            category: 'weight'
+            category: 'exercise'
         });
 
         console.log("Finished creating products")
