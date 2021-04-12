@@ -1,5 +1,5 @@
 const express = require("express");
-const { getAllorders, getOrdersById, addProductToOrder } = require("../db");
+const { getAllorders, getOrdersById, addProductToOrder, getProductById } = require("../db");
 
 const ordersRouter = express.Router();
 const { requireUser, requireAdmin } = require("./utils");
@@ -35,11 +35,12 @@ ordersRouter.post('/:orderId/products', async (req, res, next) => {
     };
 
     try {        
-
         const _order = await getOrderById(orderId);
         if (!_order) {
           throw Error('That order does not exist.');
         };
+
+        const product = await getProductById(productId);
 
         const productAdd = await addProductToOrder({
           orderId: Number(orderId),
@@ -48,30 +49,17 @@ ordersRouter.post('/:orderId/products', async (req, res, next) => {
           quantity: quantity
         });
 
-        const order = await getOrderById(orderId);
-        res.send(order);
-        
-        // orderId, productId, price, quantity
-        // const thisOrderProduct = await getOrdersByProduct({id: orderId})
-        // const currentCart = thisOrderProduct && thisOrderProduct.filter(order_products => order_products.productId === productId)
+        const dataToSend = {
+          orderProductId: productAdd.id,
+          productId: productAdd.productId,
+          name: product.name,
+          description: product.description,
+          imageURL: product.imageURL,
+          price: productAdd.price,
+          quantity: productAdd.quantity,
+        };
 
-        // if (currentCart && currentCart.length) {
-        //     res.send(currentCart+1)
-        // } else {
-        //     const addToCart = await addProductToOrder({productId, orderId});
-        //     if (addToCart) {
-        //         res.send(addToCart)
-        //     } else {
-        //         next({
-        //             name: 'FailedToAddToCart',
-        //             message: `There was an error adding ${productId} to ${orderId}`
-        //         })
-        //     }
-        // }
-
-        // if(!orderId){
-        //     throw Error('Order does not exist')
-        // };
+        res.send(dataToSend);
 
     } catch ({name, message}) {
         next({name, message});
