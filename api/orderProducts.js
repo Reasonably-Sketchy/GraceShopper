@@ -10,7 +10,8 @@ const {
     client,
     getAllProducts,
     getOrderProductById,
-    updateOrderProduct
+    updateOrderProduct,
+    destroyOrderProduct,
 } = require('../db');
 const productsRouter = require('./products');
 
@@ -54,8 +55,9 @@ orderProductsRouter.patch('/:orderProductId',
 
 orderProductsRouter.delete('/:orderProductId', requireUser, async(req, res, next)=>{
     try {
-        const deleteRoutineActivity = await destroyOrderProduct(req.params.orderProductId)
-        res.send({success: true, ...deleteRoutineActivity});
+        const { orderProductId } = req.params;
+        const deletedOrderProduct= await destroyOrderProduct(orderProductId);
+        res.send(deletedOrderProduct);
     } catch (error) {
         next(error)
     }

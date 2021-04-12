@@ -1,7 +1,6 @@
 const client = require('./client');
 
 const getOrderProductById = async (id) => {
-    console.log('Order Product Id: ', id)
     try {
         const {rows: [orderProduct]} = await client.query(`
             SELECT *
