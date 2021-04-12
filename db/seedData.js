@@ -178,7 +178,7 @@ async function createInitialProducts() {
             imageURL: 'https://images-na.ssl-images-amazon.com/images/I/512X9AqCWjL._AC_SL1000_.jpg', 
             inStock: true,
             category: 'food mincer'
-        });https://images-na.ssl-images-amazon.com/images/I/61UDS9og1qL._AC_SX425_.jpg
+        });
         await createProduct({
             name: 'Drink Weight',
             description: 'work out, and stay hydrated',
