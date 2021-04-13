@@ -90,16 +90,23 @@ describe('API', ()=> {
             it('Adds a product to an order', async()=>{
                 newOrder = await createOrder({userId: 1, status: 'created'});
                 productToAdd = await getProductById(1);
+<<<<<<< HEAD
                 newOrderProduct = await addProductToOrder({orderId: newOrder.id, productId: productToAdd.id, price: productToAdd.price, quantity: 2});
                 console.log('NEW ORDER', newOrderProduct)
                 console.log('PRODUCT TO ADD ', productToAdd)
+=======
+                newOrderProduct = {orderId: newOrder.id, productId: productToAdd.id, price: productToAdd.price, quantity: 2};
+>>>>>>> 8970477a0983b73af022725a7a79212789e512b9
 
                 const {data: response} = await axios.post(`${API_URL}/api/orders/${newOrder.id}/products`, {orderId: newOrder.id, ...newOrderProduct}, {headers: {'Authorization': `Bearer ${token}`}});
+                console.log('Response: ', response)
+                const product = response.products.find((prod) => {return prod.productId == productToAdd.id});
+                console.log('Product" ', product);
                 
-                console.log('RESPONSE: ', response)
-
                 expect(response.orderId).toBe(newOrder.orderId);
-                expect(response.productId).toBe(newOrderProductTestVar.productId)
+                
+                
+                expect(response)
             })
         });
 

@@ -14,7 +14,7 @@ const getOrderProductById = async (id) => {
     };
 };
 
-const addProductToOrder = async ({ orderId, productId, price, quantity }) => {
+const addProductToOrder = async ({ orderId, productId, price, quantity }) => {    
     try {
         const {rows: [_orderProduct]} = await client.query(`
             SELECT *
