@@ -8,9 +8,17 @@ const {
     getOrdersByUser,
     getCartByUser,
     client,
-    getAllProducts
+    getAllProducts,
+    getOrderProductById,
+    updateOrderProduct,
+    destroyOrderProduct,
 } = require('../db');
 const productsRouter = require('./products');
+
+orderProductsRouter.use((req, res, next) => {
+    console.log("A request is being made to /order_products...");
+    next();
+  });
 
 orderProductsRouter.get('/', async (req, res, next)=>{
     try { 
@@ -22,15 +30,13 @@ orderProductsRouter.get('/', async (req, res, next)=>{
     } 
 });
 
-
-
-orderProductsRouter.patch('/order_products/:orderProductId', 
+orderProductsRouter.patch('/:orderProductId', 
     requireUser,
     requiredNotSent({requiredParams: ['price', 'quantity']}),
     async (req, res, next) => {
         try {
-            const {price, quantity} = req.body
-            const {orderProductId} = req.params;
+            const { price, quantity } = req.body
+            const { orderProductId } = req.params;
             const orderProductUpdate = await getOrderProductById(orderProductId);
             if(!orderProductUpdate) {
                 next({
@@ -47,13 +53,17 @@ orderProductsRouter.patch('/order_products/:orderProductId',
         }
 });
 
-orderProductsRouter.delete('/order_products/:orderProductId', requireUser, async(req, res, next)=>{
+orderProductsRouter.delete('/:orderProductId', requireUser, async(req, res, next)=>{
     try {
-        const deleteRoutineActivity = await destroyOrderProduct(req.params.orderProductId)
-        res.send({success: true, ...deleteRoutineActivity});
+        const { orderProductId } = req.params;
+        const deletedOrderProduct= await destroyOrderProduct(orderProductId);
+
+        console.log('Deleted', deletedOrderProduct)
+
+        res.send(deletedOrderProduct);
     } catch (error) {
         next(error)
     }
 });
 
-module.exports = orderProductRouter;
+module.exports = orderProductsRouter;
