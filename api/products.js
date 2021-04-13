@@ -70,21 +70,21 @@ productsRouter.delete("/:postId", requireUser, async (req, res, next) => {
   }
 });
 
-productsRouter.get("/", async (req, res) => {
-  try {
-    const allProducts = await getAllProducts();
+// productsRouter.get("/active", async (req, res, next) => {
+//   try {
+//     const allProducts = await getAllProducts();
 
-    const products = allProducts.filter((product) => {
-      return product.active;
-      //   || (req.user && post.author.id === req.user.id)
-    });
+//     const products = allProducts.filter((product) => {
+//       return product.active;
+//       //   || (req.user && post.author.id === req.user.id)
+//     });
 
-    res.send({
-      products,
-    });
-  } catch ({ name, message }) {
-    next({ name, message });
-  }
-});
+//     res.send({
+//       products,
+//     });
+//   } catch ({ name, message }) {
+//     next({ name, message });
+//   }
+// });
 
 module.exports = productsRouter;
