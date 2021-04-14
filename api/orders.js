@@ -101,6 +101,31 @@ ordersRouter.post("/", async (req, res, next) => {
   }
 });
 
+ordersRouter.patch('/:orderId', requireUser, async (req, res, next) => {
+  try {
+    const { orderId } = req.params;
+    const { userId, status } = req.body;
+    const orderToUpdate = await getOrderById(orderId);
+    if (!orderToUpdate) {
+      throwError('That order does not exist.')
+    };
+
+    const updatedOrder = await updateOrder({
+      id: orderId, 
+      status: status, 
+      userId: userId,
+    });
+
+    if (!updatedOrder) {
+      throw Error('Update order error');
+    };
+    console.log('UPDATED: ', updatedOrder);
+
+    res.send(updatedOrder);
+  } catch (error) {
+    next(error);
+  };
+})
 
 // ordersRouter.patch('/:orderId', 
 //     requireUser, 

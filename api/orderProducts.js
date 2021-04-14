@@ -56,7 +56,7 @@ orderProductsRouter.patch('/:orderProductId',
 orderProductsRouter.delete('/:orderProductId', requireUser, async(req, res, next)=>{
     try {
         const { orderProductId } = req.params;
-        const deletedOrderProduct= await destroyOrderProduct(orderProductId);
+        const deletedOrderProduct = await destroyOrderProduct(orderProductId);
 
         console.log('Deleted', deletedOrderProduct)
 
