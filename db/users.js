@@ -117,7 +117,7 @@ async function getAllUsers() {
 const updateUser = async ({ id, first, last, email, imageURL, username, password, isAdmin }) => {
   try {
     
-    const { rows: userToUpdate } = await client.query(`
+    const { rows: [userToUpdate] } = await client.query(`
       UPDATE users
       SET "first"=$1, "last"=$2, "email"=$3, "imageURL"=$4, "username"=$5, "password"=$6, "isAdmin"=$7
       WHERE id=$8

@@ -12,11 +12,12 @@ const {
     getOrdersByUser,
     getOrdersByProduct,
     getCartByUser,
+    updateProduct,
 } = require('../db')
 
 const client = require('../db/client');
 const { rebuildDB } = require('../db/seedData');
-const { getUser, createUser } = require('../db/users');
+const { getUser, createUser, getUserById, updateUser } = require('../db/users');
 
 
 let productsFromDatabase, products, productsFromAdapter, createdProduct;
@@ -72,6 +73,44 @@ describe('Database', ()=> {
             });
         });
 
+        describe('getProductById', ()=>{
+
+          it('should return a product from the database', async ()=>{
+              const product = await getProductById(1);
+              expect(product.name).toBeTruthy();
+          });
+
+          it('should return the correct product', async () => {
+            const product = await getProductById(1);
+            expect(product.id).toBe(1);
+          })
+        
+        describe('updateProduct', () => {
+          it('should return the correct product', async () => {
+            const product = await getProductById(1);
+            const updatedProduct = await updateProduct(product);
+            expect(product.id).toBe(updatedProduct.id);
+          });
+
+          it('should update the product', async () => {
+            const updatedFields = {
+              id: 1, 
+              name: 'ScamWOW', 
+              description: 'It is just a towel.', 
+              price: 100, 
+              imageURL: 'https://www.monarchbrands.com/wp-content/uploads/2019/07/Microfiber-Cloth-Stack-2.jpg', 
+              inStock: true, 
+              category: 'Household' 
+            }
+            const updatedProduct = await updateProduct(updatedFields);
+            const product = await getProductById(1);
+            expect(product.name).toBe(updatedFields.name);
+            expect(product.description).toBe(updatedFields.description);
+          });
+        });
+
+      });
+
         describe('createProduct', ()=>{
 
             it('should create and return a new product', async () => {
@@ -88,20 +127,7 @@ describe('Database', ()=> {
             });
         });
 
-        describe('getProductById', ()=>{
 
-            it('should return a product from the database', async ()=>{
-                const product = await getProductById(1);
-                expect(product.name).toBeTruthy();
-            });
-
-            it('should return the correct product', async () => {
-              const product = await getProductById(1);
-              expect(product.id).toBe(1);
-            })
-
-
-        });
     }); // end decribe('Products')
     
     describe('Users', ()=>{
@@ -135,7 +161,30 @@ describe('Database', ()=> {
             expect(createdUser.name).toBe(userToCreate.name);
             expect(createdUser.email).toBe(userToCreate.email);
           });
+        });
 
+        describe('updateUser', () => {
+          it('should return the correct user', async () => {
+            const user = await getUserById(2);
+            const userToUpdate = user;
+            userToUpdate.password = 'bertie99'
+            const updatedUser = await updateUser(userToUpdate);
+            expect(user.id).toBe(updatedUser.id);
+          });
+
+          it('should update the user', async () => {
+            const updatedFields = {
+              id: 2, 
+              first: 'Al', 
+              last: 'Bert', 
+              email: 'bertie@bert.org',
+              username: 'albert', 
+              password: 'bertie99' 
+            }
+            const updatedUser = await updateUser(updatedFields);
+            const user = await getUserById(2);
+            expect(user.email).toBe(updatedFields.email);
+          });
         });
 
     }) // end describe('Users')
