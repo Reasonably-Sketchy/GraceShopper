@@ -10,6 +10,7 @@ const {
   getOrdersByUser,
   getCartByUser,
   getAllUsers,
+  updateUser,
 } = require("../db");
 const { requireUser, requireAdmin } = require("./utils");
 
@@ -151,6 +152,26 @@ usersRouter.get('/', requireAdmin, async (req, res, next) => {
     res.send(allUsers);
   } catch ({ name, message }) {
     next({ name, message })
+  };
+});
+
+usersRouter.patch('/:userId', requireAdmin, async (req, res, next) => {
+  const { userId } = req.params;
+  const { first, last, email, imageURL, username, password, isAdmin } = req.body;
+  try {
+    const updatedUser = await updateUser({
+      id: userId,
+      first: first,
+      last: last,
+      email: email,
+      imageURL: imageURL,
+      username: username,
+      password: password,
+      isAdmin: isAdmin,
+    });
+    res.send(updatedUser);
+  } catch ({ name, message }) {
+    next({ name, message });
   };
 });
 

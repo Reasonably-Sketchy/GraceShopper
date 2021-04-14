@@ -87,14 +87,22 @@ productsRouter.delete("/:productId", requireAdmin, async (req, res, next) => {
 
 productsRouter.patch(':/productId', requireAdmin, async (req, res, next) => {
   const { productId } = req.params;
-  // const { id, name, description, price, imageURL, inStock, category } = req.body;
+  const { name, description, price, imageURL, inStock, category } = req.body;
 
   try {
     const productToUpdate = await getProductById(productId);
     if (!productToUpdate) {
       throw Error(`You can't update a product that doesn't exist.`);
     };
-    const updatedProduct = await updateProduct(req.body);
+    const updatedProduct = await updateProduct({
+      id: productId,
+      name: name,
+      description: description,
+      price: price,
+      imageURL: imageURL,
+      inStock: inStock,
+      category: category,
+    });
 
     res.send(updatedProduct);
   } catch ({ name, message }) {
@@ -112,6 +120,5 @@ productsRouter.get('/:productId/orders', requireAdmin, async (req, res, next) =>
     next({ name, message });
   };
 });
-
 
 module.exports = productsRouter;
