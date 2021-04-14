@@ -20,8 +20,7 @@ usersRouter.use((req, res, next) => {
 });
 
 usersRouter.post("/register", async (req, res, next) => {
-  console.log("HERE");
-  const { first, last, email, username, password } = req.body;
+  const { first, last, email, imageURL, username, password } = req.body;
   try {
     if (password.length <= 7) {
       next({
@@ -42,6 +41,7 @@ usersRouter.post("/register", async (req, res, next) => {
       first: first,
       last: last,
       email: email,
+      imageURL: imageURL,
       username: username,
       password: password,
     });
