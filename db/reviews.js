@@ -1,5 +1,19 @@
 const client = require(`./client`)
 
+const getReviewById = async (id) => {
+    try {
+        const { rows: [review] } = await client.query(`
+            SELECT *
+            FROM reviews
+            WHERE id=$1;
+        `, [id]);
+
+        return review;
+    } catch (error) {
+        throw error;
+    };
+};
+
 const createReview = async ({ title, content, stars, userId, productId }) => {
     // if (content.length < 30) {
     //     throw Error('Review content must be at least 30 characters long.')
@@ -80,6 +94,7 @@ const getReviewsByUser = async (userId) => {
 };
 
 module.exports = {
+    getReviewById,
     createReview,
     updateReview,
     deleteReview,
