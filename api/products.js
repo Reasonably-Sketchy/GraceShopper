@@ -9,6 +9,7 @@ const {
   getProductById,
   createProduct,
   destroyProduct,
+  updateProduct,
 } = require("../db");
 
 productsRouter.use((req, res, next) => {
@@ -81,6 +82,23 @@ productsRouter.delete("/:productId", requireAdmin, async (req, res, next) => {
   } catch ({ name, message }) {
     next({ name, message });
   }
+});
+
+productsRouter.patch(':/productId', requireAdmin, async (req, res, next) => {
+  const { productId } = req.params;
+  // const { id, name, description, price, imageURL, inStock, category } = req.body;
+
+  try {
+    const productToUpdate = await getProductById(productId);
+    if (!productToUpdate) {
+      throw Error(`You can't update a product that doesn't exist.`);
+    };
+    const updatedProduct = await updateProduct(req.body);
+    
+    res.send(updatedProduct);
+  } catch ({ name, message }) {
+    next({ name, message });
+  };
 });
 
 
