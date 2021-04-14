@@ -200,6 +200,19 @@ const cancelOrder = async (id) => {
     };
 };
 
+const deleteOrder = async (id) => {
+    try {
+        const { rows: [order] } = await client.query(`
+            DELETE FROM orders
+            WHERE id=$1
+            RETURNING *;
+        `, [id]);
+        return order;
+    } catch (error) {
+        throw error;
+    };
+};
+
 module.exports = {
     getOrderById,
     getAllOrders,
@@ -210,4 +223,5 @@ module.exports = {
     updateOrder,
     completeOrder,
     cancelOrder,
+    deleteOrder,
 }

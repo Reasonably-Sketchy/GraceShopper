@@ -1,5 +1,5 @@
 const express = require("express");
-const { getAllorders, getOrdersById, addProductToOrder, getProductById } = require("../db");
+const { getAllorders, getOrdersById, addProductToOrder, getProductById, deleteOrder } = require("../db");
 
 const ordersRouter = express.Router();
 const { requireUser, requireAdmin } = require("./utils");
@@ -127,27 +127,20 @@ ordersRouter.patch('/:orderId', requireUser, async (req, res, next) => {
   };
 })
 
-// ordersRouter.delete("/:orderId", requireUser, async(req, res, next)=>{
-//     try {
-//         const thisOrder = await getOrderById(req.params.orderId);
+ordersRouter.delete("/:orderId", requireUser, async(req, res, next)=>{
+    const { orderId } = req.params;
 
-//         if (thisOrder && thisOrder.author.id === req.params.orderId) {
-//             const 
-//         } else {
-//             thisOrder
-//                 ? {
-//                     name: "UnauthorizedUserError",
-//                     message: "You cannot cancel an order that is not yours"
-//                     }
-//                 : {
-//                     name: "NotFoundError",
-//                     message: "You dun goofed, how did you even get here?"
-//                 }
-//         }
-
-//     } catch ({name, message}) {
-//         next({name, message});
-//     }
-// });
+    try {
+      const orderToDelete = await getOrderById(orderId);
+      if (!orderToDelete) {
+        throw Error(`You can't delete an order that doesn't exist.`);
+      };
+      const deletedOrder = await deleteOrder(orderToDelete);
+      
+      res.send(deletedOrder);
+    } catch ({ name, message }) {
+      next({ name, message });
+    };
+});
 
 module.exports = ordersRouter;
