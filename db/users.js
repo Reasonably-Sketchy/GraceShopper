@@ -36,6 +36,7 @@ async function getUser({ username, password }) {
   try {
     const user = await getUserByUserName(username);
     // const user = await getUserByUserName(username);
+    // console.log('user line 39', user)
     const hashedPassword = user.password;
     const passwordsMatch = await bcrypt.compare(password, hashedPassword);
 
@@ -94,7 +95,7 @@ async function getUserByUserName(username) {
             `,
       [username]
     );
-
+    console.log('user line 98', user)
     return user;
   } catch (error) {
     throw error;

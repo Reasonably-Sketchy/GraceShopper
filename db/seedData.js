@@ -292,7 +292,7 @@ async function createInitialUsers() {
             last: 'Galvez',
             email: 'realemail@aol.com',
             username: 'Timo',
-            password: '12345678',
+            password: '123456789',
             imageURL: 'https://imgur.com/u9X0PFE',
             isAdmin: true,
         });
