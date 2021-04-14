@@ -97,7 +97,9 @@ usersRouter.post("/login", async (req, res, next) => {
 
 // add users/me
 usersRouter.get("/me", requireUser, async (req, res, next) => {
+
   console.log("A request is being made to users/me");
+  
   const auth = req.header("Authorization");
   const prefix = "Bearer ";
   const token = auth.slice(prefix.length);
