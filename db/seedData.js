@@ -288,12 +288,22 @@ async function createInitialUsers() {
         });
 
         await createUser({ 
-            first: 'Timo',
+            first: 'Tim',
             last: 'Galvez',
-            email: 'realemail@aol.com',
+            email: 'timsemail@gmail.com',
             username: 'Timo',
-            password: '123456789',
-            imageURL: 'https://imgur.com/u9X0PFE',
+            password: '12345678',
+            imageURL: '',
+            isAdmin: true,
+        });
+
+        await createUser({ 
+            first: 'Nick',
+            last: 'Swanson',
+            email: 'nicksemail@gmail.com',
+            username: 'Overlord',
+            password: '12345678',
+            imageURL: '',
             isAdmin: true,
         });
       
