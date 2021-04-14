@@ -9,6 +9,8 @@ const {
   getUserByUserName,
   getOrdersByUser,
   getCartByUser,
+  getAllUsers,
+  updateUser,
 } = require("../db");
 const { requireUser, requireAdmin } = require("./utils");
 
@@ -18,8 +20,7 @@ usersRouter.use((req, res, next) => {
 });
 
 usersRouter.post("/register", async (req, res, next) => {
-  console.log("HERE");
-  const { first, last, email, username, password } = req.body;
+  const { first, last, email, imageURL, username, password } = req.body;
   try {
     if (password.length <= 7) {
       next({
@@ -40,6 +41,7 @@ usersRouter.post("/register", async (req, res, next) => {
       first: first,
       last: last,
       email: email,
+      imageURL: imageURL,
       username: username,
       password: password,
     });
@@ -97,7 +99,9 @@ usersRouter.post("/login", async (req, res, next) => {
 
 // add users/me
 usersRouter.get("/me", requireUser, async (req, res, next) => {
+
   console.log("A request is being made to users/me");
+  
   const auth = req.header("Authorization");
   const prefix = "Bearer ";
   const token = auth.slice(prefix.length);
@@ -140,6 +144,35 @@ usersRouter.get("/:userId/orders", requireAdmin, async (req, res, next) => {
   } catch ({ name, message }) {
     next({ name, message });
   }
+});
+
+usersRouter.get('/', requireAdmin, async (req, res, next) => {
+  try {
+    const allUsers = await getAllUsers();
+    res.send(allUsers);
+  } catch ({ name, message }) {
+    next({ name, message })
+  };
+});
+
+usersRouter.patch('/:userId', requireAdmin, async (req, res, next) => {
+  const { userId } = req.params;
+  const { first, last, email, imageURL, username, password, isAdmin } = req.body;
+  try {
+    const updatedUser = await updateUser({
+      id: userId,
+      first: first,
+      last: last,
+      email: email,
+      imageURL: imageURL,
+      username: username,
+      password: password,
+      isAdmin: isAdmin,
+    });
+    res.send(updatedUser);
+  } catch ({ name, message }) {
+    next({ name, message });
+  };
 });
 
 module.exports = usersRouter;

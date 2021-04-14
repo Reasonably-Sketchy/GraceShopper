@@ -23,7 +23,6 @@ async function getAllProducts() {
             SELECT *
             FROM products;
         `);
-        console.log('ROWS', rows)
     return rows;
   } catch (error) {
     throw error;
@@ -81,9 +80,40 @@ async function attachProductsToOrders(orders) {
   };
 };
 
+const updateProduct = async ({ id, name, description, price, imageURL, inStock, category }) => {
+  try {
+    const { rows: [productToUpdate] } = await client.query(`
+      UPDATE products
+      SET "name"=$1, "description"=$2, "price"=$3, "imageURL"=$4, "inStock"=$5, "category"=$6
+      WHERE id=$7
+      RETURNING *;
+    `, [name, description, price, imageURL, inStock, category, id]);
+
+    return productToUpdate;
+  } catch (error) {
+    throw error;
+  };
+};
+
+const destroyProduct = async ({ id }) => {
+  try {
+    const { rows: productToDelete } = await client.query(`
+      DELETE FROM products
+      WHERE id=$1
+      RETURNING *;
+    `, [id]);
+
+    return productToDelete;
+  } catch (error) {
+    throw error;
+  };
+};
+
 module.exports = {
     getProductById,
     getAllProducts,
     createProduct,
     attachProductsToOrders,
+    updateProduct,
+    destroyProduct,
 }
