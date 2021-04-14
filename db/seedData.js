@@ -39,6 +39,7 @@ async function dropTables() {
         await client.query(`
             DROP TABLE IF EXISTS order_products;
             DROP TABLE IF EXISTS orders;
+            DROP TABLE IF EXISTS reviews;
             DROP TABLE IF EXISTS users;
             DROP TABLE IF EXISTS products; 
         `);
@@ -80,8 +81,18 @@ async function createTables() {
                 "isAdmin" BOOLEAN DEFAULT false
             );
         `)
+
+        await client.query(`
+           CREATE TABLE reviews (
+               id SERIAL PRIMARY KEY,
+               title VARCHAR(255) NOT NULL,
+               content VARCHAR(255) NOT NULL,
+               stars INTEGER NOT NULL CHECK (stars >= 0 AND stars <= 5),
+               "userId" INTEGER REFERENCES users(id),
+               "productId" INTEGER REFERENCES products(id)
+           ); 
+        `)
         
-        // need to change datePlaced
         await client.query(`
             CREATE TABLE orders (
                 id SERIAL PRIMARY KEY,
@@ -315,6 +326,9 @@ async function createInitialUsers() {
     }
 }
 
+// async function createInitialReviews() {
+
+// }
 
 async function createInitialOrders(){
 
