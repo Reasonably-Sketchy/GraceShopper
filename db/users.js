@@ -95,7 +95,7 @@ async function getUserByUserName(username) {
             `,
       [username]
     );
-    console.log('user line 98', user)
+    console.log('user line 98 in db/users.js ', user)
     return user;
   } catch (error) {
     throw error;
@@ -108,7 +108,7 @@ async function getAllUsers() {
       SELECT *
       FROM users;
     `);
-
+    console.log('users line 111', users )
     return users;
   } catch (error) {
     throw error;
