@@ -77,16 +77,22 @@ describe('API', ()=> {
                 const token = data.token;
                 expect(token).toBeDefined();
             });
-
-            // it('Checks that the password is correct', async () => {
-            //     const {data} = await axios.post(`${API_URL}/api/users/login`, {username: 'albert', password: 'bertie1111'});
-            // })
         });
 
         describe('POST /users/register', () => {
-
+            it('Registers a new user', async () => {
+                const {data} = await axios.post(`${API_URL}/api/users/register`, {
+                    first: 'tony',
+                    last: 'tiger',
+                    email: 'tonyrules@aol.com',
+                    username: 'tony', 
+                    password: 'tonyDaMan'
+                });
+                const token = data.token;
+                expect(token).toBeDefined();
+            });
         })
-    })
+    });
 
     describe('Orders', () => {
         let token;
