@@ -8,6 +8,7 @@ const {
   getAllProducts,
   getProductById,
   createProduct,
+  destroyProduct,
 } = require("../db");
 
 productsRouter.use((req, res, next) => {
@@ -66,32 +67,21 @@ productsRouter.post('/', requireAdmin, async (req, res, next) => {
 });
 
 
-// productsRouter.delete("/:productId", requireUser, async (req, res, next) => {
-//   try {
-//     const post = await getProductById(req.params.postId);
-
-//     if (post && post.author.id === req.user.id) {
-//       const updatedPost = await updatePost(post.id, { active: false });
-
-//       res.send({ post: updatedPost });
-//     } else {
-//       // if there was a post, throw UnauthorizedUserError, otherwise throw PostNotFoundError
-//       next(
-//         post
-//           ? {
-//               name: "UnauthorizedUserError",
-//               message: "You cannot delete a post which is not yours",
-//             }
-//           : {
-//               name: "ProductNotFoundError",
-//               message: "That product does not exist",
-//             }
-//       );
-//     }
-//   } catch ({ name, message }) {
-//     next({ name, message });
-//   }
-// });
+productsRouter.delete("/:productId", requireAdmin, async (req, res, next) => {
+  const { productId } = req.params;
+  
+  try {
+    const productToDelete = await getProductById(productId);
+    if (!productToDelete) {
+      throw Error(`You can't delete a product that doesn't exist.`);
+    };
+    const deletedProduct = await destroyProduct(productToDelete);
+    
+    res.send(deletedProduct);
+  } catch ({ name, message }) {
+    next({ name, message });
+  }
+});
 
 
 
