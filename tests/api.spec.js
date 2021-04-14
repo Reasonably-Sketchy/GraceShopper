@@ -5,7 +5,7 @@ const { rebuildDB } = require('../db/seedData');
 const client = require('../db/client');
 // const { describe } = require('yargs');
 // const { token } = require('morgan');
-const { createOrder, getOrdersByProduct } = require('../db/orders');
+const { createOrder, getOrdersByProduct, getOrderById } = require('../db/orders');
 
 const { SERVER_ADDRESS = 'http://localhost:', PORT = 3000 } = process.env;
 const API_URL = process.env.API_URL || SERVER_ADDRESS + PORT;
@@ -19,7 +19,7 @@ describe('API', ()=> {
         client.end();
     });
 
-    xit('responds to a request at /api/health with a message specifying it is healthy', async () => {
+    it('responds to a request at /api/health with a message specifying it is healthy', async () => {
     try {
         const res = await axios.get(`${API_URL}/api/health`);
         expect(typeof res.data.message).toEqual('string');
@@ -42,11 +42,11 @@ describe('API', ()=> {
 
             });
 
-            xit('Returns an array', () => {
+            it('Returns an array', () => {
                 expect(Array.isArray(products)).toBe(true);
             });
 
-            xit('Returns products from the database', () => {
+            it('Returns products from the database', () => {
                 const [ product ] = products;
                 expect(product.name).toBeDefined();
             });
@@ -60,15 +60,81 @@ describe('API', ()=> {
                 firstProduct = data;
             });
 
-            xit('Returns a product from the database', () => {
+            it('Returns a product from the database', () => {
                 expect(firstProduct.name).toBeDefined();
             });
 
-            xit('Returns the correct product', () => {
+            it('Returns the correct product', () => {
                 expect(firstProduct.id).toEqual(1);
             });
         })
     }); // END describe('Products')
+
+    describe('Users', () => {
+        describe('POST /users/login', () => {
+            it('Logs an existing user in', async () => {
+                const {data} = await axios.post(`${API_URL}/api/users/login`, {username: 'albert', password: 'bertie99'});
+                const token = data.token;
+                expect(token).toBeDefined();
+            });
+
+            // it('Checks that the password is correct', async () => {
+            //     const {data} = await axios.post(`${API_URL}/api/users/login`, {username: 'albert', password: 'bertie1111'});
+            // })
+        });
+
+        describe('POST /users/register', () => {
+
+        })
+    })
+
+    describe('Orders', () => {
+        let token;
+        beforeAll(async() => {
+            try {
+                const {data} = await axios.post(`${API_URL}/api/users/login`, {username: 'albert', password: 'bertie99'});
+                token = data.token;
+            } catch(error) {
+                console.error(error);
+            };
+        });
+
+        describe('POST /orders', () => {
+            it('Creates a new order', async () => {
+                const {data: response} = await axios.post(`${API_URL}/api/orders/`, {status: 'created'}, {headers: {'Authorization': `Bearer ${token}`}});                
+                const {rows: [order] } = await client.query(`
+                    SELECT *
+                    FROM orders
+                    WHERE id=$1;
+                `, [response.id]);
+                expect(order).toBeDefined();
+            });
+        })
+
+        describe('POST /orders/:orderId/products', ()=>{
+            let newOrder;
+            let productToAdd;
+            let newOrderProduct;
+            it('Adds a product to an order', async()=>{
+                newOrder = await createOrder({userId: 1, status: 'created'});
+                productToAdd = await getProductById(1);
+                newOrderProduct = {orderId: newOrder.id, productId: productToAdd.id, price: productToAdd.price, quantity: 2};
+                const {data: response} = await axios.post(`${API_URL}/api/orders/${newOrder.id}/products`, {orderId: newOrder.id, ...newOrderProduct}, {headers: {'Authorization': `Bearer ${token}`}});                
+                expect(response.orderId).toBe(newOrder.orderId);
+            });
+        });
+
+        describe('PATCH /orders/:orderId', () => {
+            it('Edits the status of an order', async()=>{
+                newOrder = await createOrder({userId: 2, status: 'created'});
+                orderToEdit = await getOrderById(newOrder.id);
+                editedOrder = {orderId: newOrder.id, status: 'completed', userId: 2};
+                const {data: response} = await axios.patch(`${API_URL}/api/orders/${newOrder.id}/`, {orderId: newOrder.id, ...editedOrder}, {headers: {'Authorization': `Bearer ${token}`}});                
+                expect(response.status).toBe(editedOrder.status);
+            });
+        })
+
+    })
 
     describe('Order_Products', ()=>{
         // let newOrderProductTestVar = {orderId: 7, productId: 7, quantity:2};
@@ -81,27 +147,6 @@ describe('API', ()=> {
             } catch(error) {
                 console.error(error);
             };
-        });
-
-        describe('POST /orders/:orderId/products', ()=>{
-            let newOrder;
-            let productToAdd;
-            let newOrderProduct;
-            it('Adds a product to an order', async()=>{
-                newOrder = await createOrder({userId: 1, status: 'created'});
-                productToAdd = await getProductById(1);
-                newOrderProduct = {orderId: newOrder.id, productId: productToAdd.id, price: productToAdd.price, quantity: 2};
-
-                const {data: response} = await axios.post(`${API_URL}/api/orders/${newOrder.id}/products`, {orderId: newOrder.id, ...newOrderProduct}, {headers: {'Authorization': `Bearer ${token}`}});
-                console.log('Response: ', response)
-                const product = response.products.find((prod) => {return prod.productId == productToAdd.id});
-                console.log('Product" ', product);
-                
-                expect(response.orderId).toBe(newOrder.orderId);
-                
-                
-                expect(response)
-            })
         });
 
         describe('PATCH /order_products/:orderProductId', ()=>{
