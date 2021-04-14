@@ -41,7 +41,7 @@ reviewsRouter.patch('/:reviewId', requireUser, async (req, res, next) => {
         };
 
         const updatedReview = await updateReview({
-            id: userId,
+            id: reviewId,
             title: title,
             content: content,
             stars: stars,
@@ -79,18 +79,6 @@ reviewsRouter.get('/:productId', async (req, res, next) => {
         const productReviews = await getReviewsByProductId(productId);
         
         res.send(productReviews);
-    } catch ({ name, message }) {
-        next({ name, message });
-    };
-});
-
-reviewsRouter.get('/:userId', requireUser, async (req, res, next) => {
-    const { userId } = req.params;
-
-    try {
-        const userReviews = await getReviewsByUser(userId);
-        
-        res.send(userReviews);
     } catch ({ name, message }) {
         next({ name, message });
     };
