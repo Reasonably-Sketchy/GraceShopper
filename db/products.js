@@ -81,9 +81,24 @@ async function attachProductsToOrders(orders) {
   };
 };
 
+const destroyProduct = async ({ id }) => {
+  try {
+    const productToDelete = await client.query(`
+      DELETE FROM products
+      WHERE id=$1
+      RETURNING *;
+    `, [id]);
+
+    return productToDelete;
+  } catch (error) {
+    throw error;
+  };
+};
+
 module.exports = {
     getProductById,
     getAllProducts,
     createProduct,
     attachProductsToOrders,
+    destroyProduct,
 }
