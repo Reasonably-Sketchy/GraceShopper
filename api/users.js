@@ -9,6 +9,7 @@ const {
   getUserByUserName,
   getOrdersByUser,
   getCartByUser,
+  getAllUsers,
 } = require("../db");
 const { requireUser, requireAdmin } = require("./utils");
 
@@ -142,6 +143,15 @@ usersRouter.get("/:userId/orders", requireAdmin, async (req, res, next) => {
   } catch ({ name, message }) {
     next({ name, message });
   }
+});
+
+usersRouter.get('/', requireAdmin, async (req, res, next) => {
+  try {
+    const allUsers = await getAllUsers();
+    res.send(allUsers);
+  } catch ({ name, message }) {
+    next({ name, message })
+  };
 });
 
 module.exports = usersRouter;
