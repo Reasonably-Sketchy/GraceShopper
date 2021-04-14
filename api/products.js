@@ -1,12 +1,16 @@
 const express = require("express");
 const productsRouter = express.Router();
-const { requireUser } = require("./utils");
+const { requireUser, requireAdmin } = require("./utils");
 const {
   client,
   updatePost,
   getPostById,
   getAllProducts,
   getProductById,
+  createProduct,
+  destroyProduct,
+  updateProduct,
+  getOrdersByProduct,
 } = require("../db");
 
 productsRouter.use((req, res, next) => {
@@ -38,53 +42,83 @@ productsRouter.get("/:productId", async (req, res, next) => {
   }
 });
 
-productsRouter.use((req, res, next) => {
-  console.log("A request is being made to /products");
-  next();
+productsRouter.post('/', requireAdmin, async (req, res, next) => {
+  const { name, description, price, imageURL, inStock, category } = req.body;
+
+  const product = {
+    name: name,
+    description: description, 
+    price: price,
+    category: category 
+  };
+
+  if (imageURL) {
+    product.imageURL = imageURL;
+  };
+  
+  if (typeof inStock == 'boolean') {
+    product.inStock = inStock;
+  };
+
+  try {
+    const newProduct = await createProduct(product);
+    res.send(newProduct);
+  } catch ({ name, message }) {
+    next({ name, message });
+  };
 });
 
-productsRouter.delete("/:postId", requireUser, async (req, res, next) => {
+
+productsRouter.delete("/:productId", requireAdmin, async (req, res, next) => {
+  const { productId } = req.params;
+  
   try {
-    const post = await getProductById(req.params.postId);
-
-    if (post && post.author.id === req.user.id) {
-      const updatedPost = await updatePost(post.id, { active: false });
-
-      res.send({ post: updatedPost });
-    } else {
-      // if there was a post, throw UnauthorizedUserError, otherwise throw PostNotFoundError
-      next(
-        post
-          ? {
-              name: "UnauthorizedUserError",
-              message: "You cannot delete a post which is not yours",
-            }
-          : {
-              name: "ProductNotFoundError",
-              message: "That product does not exist",
-            }
-      );
-    }
+    const productToDelete = await getProductById(productId);
+    if (!productToDelete) {
+      throw Error(`You can't delete a product that doesn't exist.`);
+    };
+    const deletedProduct = await destroyProduct(productToDelete);
+    
+    res.send(deletedProduct);
   } catch ({ name, message }) {
     next({ name, message });
   }
 });
 
-// productsRouter.get("/active", async (req, res, next) => {
-//   try {
-//     const allProducts = await getAllProducts();
+productsRouter.patch(':/productId', requireAdmin, async (req, res, next) => {
+  const { productId } = req.params;
+  const { name, description, price, imageURL, inStock, category } = req.body;
 
-//     const products = allProducts.filter((product) => {
-//       return product.active;
-//       //   || (req.user && post.author.id === req.user.id)
-//     });
+  try {
+    const productToUpdate = await getProductById(productId);
+    if (!productToUpdate) {
+      throw Error(`You can't update a product that doesn't exist.`);
+    };
+    const updatedProduct = await updateProduct({
+      id: productId,
+      name: name,
+      description: description,
+      price: price,
+      imageURL: imageURL,
+      inStock: inStock,
+      category: category,
+    });
 
-//     res.send({
-//       products,
-//     });
-//   } catch ({ name, message }) {
-//     next({ name, message });
-//   }
-// });
+    res.send(updatedProduct);
+  } catch ({ name, message }) {
+    next({ name, message });
+  };
+});
+
+
+productsRouter.get('/:productId/orders', requireAdmin, async (req, res, next) => {
+  const { productId } = req.params;
+  try {
+    const ordersByProduct = getOrdersByProduct({id: productId});
+    res.send(ordersByProduct);
+  } catch ({ name, message }) {
+    next({ name, message });
+  };
+});
 
 module.exports = productsRouter;
