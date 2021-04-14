@@ -10,6 +10,7 @@ const {
   createProduct,
   destroyProduct,
   updateProduct,
+  getOrdersByProduct,
 } = require("../db");
 
 productsRouter.use((req, res, next) => {
@@ -94,13 +95,23 @@ productsRouter.patch(':/productId', requireAdmin, async (req, res, next) => {
       throw Error(`You can't update a product that doesn't exist.`);
     };
     const updatedProduct = await updateProduct(req.body);
-    
+
     res.send(updatedProduct);
   } catch ({ name, message }) {
     next({ name, message });
   };
 });
 
+
+productsRouter.get('/:productId/orders', requireAdmin, async (req, res, next) => {
+  const { productId } = req.params;
+  try {
+    const ordersByProduct = getOrdersByProduct({id: productId});
+    res.send(ordersByProduct);
+  } catch ({ name, message }) {
+    next({ name, message });
+  };
+});
 
 
 module.exports = productsRouter;
