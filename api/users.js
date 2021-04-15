@@ -12,6 +12,7 @@ const {
   getAllUsers,
   updateUser,
 } = require("../db");
+const { getReviewsByUser } = require("../db/reviews");
 const { requireUser, requireAdmin } = require("./utils");
 
 usersRouter.use((req, res, next) => {
@@ -172,6 +173,18 @@ usersRouter.patch('/:userId', requireAdmin, async (req, res, next) => {
     res.send(updatedUser);
   } catch ({ name, message }) {
     next({ name, message });
+  };
+});
+
+usersRouter.get('/:userId/reviews', requireUser, async (req, res, next) => {
+  const { userId } = req.params;
+
+  try {
+      const userReviews = await getReviewsByUser(userId);
+      
+      res.send(userReviews);
+  } catch ({ name, message }) {
+      next({ name, message });
   };
 });
 
