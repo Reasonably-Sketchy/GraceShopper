@@ -30,6 +30,7 @@ const {
     updateOrderProduct,
     destroyOrderProduct,
 } = require('./order_products');
+const { createReview } = require('./reviews');
 
 // Drop tables
 async function dropTables() {
@@ -39,6 +40,7 @@ async function dropTables() {
         await client.query(`
             DROP TABLE IF EXISTS order_products;
             DROP TABLE IF EXISTS orders;
+            DROP TABLE IF EXISTS reviews;
             DROP TABLE IF EXISTS users;
             DROP TABLE IF EXISTS products; 
         `);
@@ -80,8 +82,18 @@ async function createTables() {
                 "isAdmin" BOOLEAN DEFAULT false
             );
         `)
+
+        await client.query(`
+           CREATE TABLE reviews (
+               id SERIAL PRIMARY KEY,
+               title VARCHAR(255) NOT NULL,
+               content VARCHAR(255) NOT NULL,
+               stars INTEGER NOT NULL CHECK (stars >= 0 AND stars <= 5),
+               "userId" INTEGER REFERENCES users(id),
+               "productId" INTEGER REFERENCES products(id)
+           ); 
+        `)
         
-        // need to change datePlaced
         await client.query(`
             CREATE TABLE orders (
                 id SERIAL PRIMARY KEY,
@@ -315,6 +327,55 @@ async function createInitialUsers() {
     }
 }
 
+async function createInitialReviews() {
+    try {
+        console.log("Starting to create initial reviews...");
+
+        await createReview({
+            title: 'Best towels ever',
+            content: `I bought 100 of these and I'll never go back.`,
+            stars: 5,
+            userId: 2,
+            productId: 1,
+        });
+
+        await createReview({
+            title: `They're okay.`,
+            content: `I really only bought them for the colors. They do the job though.`,
+            stars: 3,
+            userId: 4,
+            productId: 1,
+        });
+
+        await createReview({
+            title: 'Sickest on the market',
+            content: `My dog looks like a total stud now.`,
+            stars: 5,
+            userId: 3,
+            productId: 2,
+        });
+
+        await createReview({
+            title: `I'm dating a blanket`,
+            content: `Seriously - who needs a spouse?`,
+            stars: 5,
+            userId: 3,
+            productId: 5,
+        });
+
+        await createReview({
+            title: 'Jump higher, run faster',
+            content: `Dude....DUDE! THESE ARE SICK.`,
+            stars: 5,
+            userId: 2,
+            productId: 6,
+        });
+    } catch (error) {
+        console.log("Error creating reviews!");
+        throw error;
+    }
+};
+
 async function createInitialOrders(){
 
     try {
@@ -398,6 +459,7 @@ const rebuildDB = async () => {
         await createTables();
         await createInitialProducts();
         await createInitialUsers();
+        await createInitialReviews();
         await createInitialOrders();
         await createInitialOrderProducts();
     } catch (error) {
