@@ -143,12 +143,12 @@ describe('API', ()=> {
     })
 
     describe('Order_Products', ()=>{
-        // let newOrderProductTestVar = {orderId: 7, productId: 7, quantity:2};
-        // let oldOrderProductTestVar = {orderId: 6, productId: 4, quantity:1};
         let token;
+        let user;
         beforeAll(async() => {
             try {
-                const {data} = await axios.post(`${API_URL}/api/users/login`, {username: 'Guest', password: 'Guest123'});
+                const {data} = await axios.post(`${API_URL}/api/users/login`, {username: 'albert', password: 'bertie99'});
+                user = data.user;
                 token = data.token;
             } catch(error) {
                 console.error(error);
@@ -156,25 +156,26 @@ describe('API', ()=> {
         });
 
         describe('PATCH /order_products/:orderProductId', ()=>{
-            xit('updates to order', async()=>{
-                const {data: response} = await axios.patch(`
-                ${API_URL}/api/order_products/${oldOrderProductTestVar.productId}`,
-                    newOrderProductTestVar, 
-                    {headers: {'Authorization': `Bearer ${token}`}} 
-                );
-
-                expect(response.quantity).toEqual(newOrderProductTestVar.quantity)
+            it('updates the order product', async ()=>{
+                const newOrder = await createOrder({userId: user.id, status: 'created'});
+                const productToAdd = await getProductById(1);
+                const orderProduct = await addProductToOrder({orderId: newOrder.id, productId: productToAdd.id, price: productToAdd.price, quantity: 5})
+                const update = {
+                    price: productToAdd.price,
+                    quantity: 10,
+                };
+                const {data: response} = await axios.patch(`${API_URL}/api/order_products/${orderProduct.id}`, {...update}, {headers: {'Authorization': `Bearer ${token}`}});                
+                expect(response.quantity).toEqual(update.quantity)
             })
         });
 
         describe('DELETE /order_products/:orderProductId', ()=>{
-            xit('removes product from order', async ()=>{
-                const {data: deleteOrderProduct} = await axios.delete(`
-                    ${API_URL}/api/order_products/${newOrderProductTestVar.productId}`,
-                    {headers: {'Authorization': `Bearer ${token}`}}
-                );
-                const shouldBeDeleted = await getOrdersByProduct(deleteOrderProduct.id);
-                expect(deleteOrderProduct.id).toBe(newOrderProductTestVar.id)
+            it('removes product from order', async ()=>{
+                const newOrder = await createOrder({userId: user.id, status: 'created'});
+                const productToAdd = await getProductById(1);
+                const orderProduct = await addProductToOrder({orderId: newOrder.id, productId: productToAdd.id, price: productToAdd.price, quantity: 5})
+                const {data: response} = await axios.delete(`${API_URL}/api/order_products/${orderProduct.id}`, {headers: {'Authorization': `Bearer ${token}`}});                               
+                expect(response.id).toBe(orderProduct.id);
             })
         } )
     }) // END describe('Order_Products')
@@ -188,7 +189,6 @@ describe('API', ()=> {
                 const {data} = await axios.post(`${API_URL}/api/users/login`, {username: 'albert', password: 'bertie99'});
                 user = data.user;
                 token = data.token;
-                console.log('TOKEN ', token)
             } catch(error) {
                 console.error(error);
             };
