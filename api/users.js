@@ -188,4 +188,21 @@ usersRouter.get('/:userId/reviews', requireUser, async (req, res, next) => {
   };
 });
 
+
+usersRouter.delete("/:userId", requireAdmin, async (req, res, next) => {
+  const { userId } = req.params;
+  
+  try {
+    const userToDelete = await getUserById(userId);
+    if (!userToDelete) {
+      throw Error(`You can't delete a product that doesn't exist.`);
+    };
+    const deleteUser = await destroyUser(userToDelete);
+    
+    res.send(deleteUser);
+  } catch ({ name, message }) {
+    next({ name, message });
+  }
+});
+
 module.exports = usersRouter;

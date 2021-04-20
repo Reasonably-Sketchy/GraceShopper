@@ -131,6 +131,20 @@ const updateUser = async ({ id, first, last, email, imageURL, username, password
   };
 };
 
+const destroyUser = async ({id}) => {
+  try {
+    const {rows: userToDelete} = await client.query(`
+      DELETE FROM users
+      WHERE id=$1
+      RETURNING *;
+    `, [id]);
+
+    return userToDelete
+  } catch (error) {
+    throw error
+  }
+}
+
 module.exports = {
   createUser,
   getUser,
@@ -138,4 +152,5 @@ module.exports = {
   getUserByUserName,
   getAllUsers,
   updateUser,
+  destroyUser
 };
