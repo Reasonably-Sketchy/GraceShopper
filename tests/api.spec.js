@@ -101,7 +101,7 @@ describe('API', ()=> {
                 const {data} = await axios.post(`${API_URL}/api/users/login`, {username: 'albert', password: 'bertie99'});
                 token = data.token;
             } catch(error) {
-                console.error(error);
+                console.log(error);
             };
         });
 

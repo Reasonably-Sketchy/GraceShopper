@@ -36,6 +36,7 @@ async function getUser({ username, password }) {
   try {
     const user = await getUserByUserName(username);
     // const user = await getUserByUserName(username);
+    // console.log('user line 39', user)
     const hashedPassword = user.password;
     const passwordsMatch = await bcrypt.compare(password, hashedPassword);
 
@@ -94,7 +95,7 @@ async function getUserByUserName(username) {
             `,
       [username]
     );
-
+    console.log('user line 98 in db/users.js ', user)
     return user;
   } catch (error) {
     throw error;
@@ -107,7 +108,7 @@ async function getAllUsers() {
       SELECT *
       FROM users;
     `);
-
+    console.log('users line 111', users )
     return users;
   } catch (error) {
     throw error;
@@ -130,6 +131,20 @@ const updateUser = async ({ id, first, last, email, imageURL, username, password
   };
 };
 
+const destroyUser = async ({id}) => {
+  try {
+    const {rows: userToDelete} = await client.query(`
+      DELETE FROM users
+      WHERE id=$1
+      RETURNING *;
+    `, [id]);
+
+    return userToDelete
+  } catch (error) {
+    throw error
+  }
+}
+
 module.exports = {
   createUser,
   getUser,
@@ -137,4 +152,5 @@ module.exports = {
   getUserByUserName,
   getAllUsers,
   updateUser,
+  destroyUser
 };
